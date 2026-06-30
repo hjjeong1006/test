@@ -2,144 +2,655 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<!-- 어제 수정과 동일하게 viewport-fit=cover 포함 -->
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>세로 스크롤 재현 테스트</title>
+<title>툴킷 대시보드</title>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Square+Round:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: "NanumSquareRound", sans-serif; background: #e8e8e6; overflow: hidden; }
 
-  /* 어제 수정본과 동일한 패턴: html, body만 overflow:hidden */
-  html, body {
-    height: 100%;
-    font-family: "NanumSquareRound", -apple-system, sans-serif;
-    background: #e8e8e6;
-    overflow: hidden;
-  }
+/* ── GNB ── */
+.gnb {
+  height: 48px; background: #fff;
+  border-bottom: 1px solid #DCDCDC;
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 20px; flex-shrink: 0;
+}
+.gnb-logo { font-size: 15px; font-weight: 800; color: #222; }
+.gnb-chip {
+  font-size: 12px; font-weight: 800; padding: 5px 16px;
+  border-radius: 99px; border: 1.5px solid #DCDCDC;
+  color: #888; cursor: pointer; background: #fff;
+  font-family: "NanumSquareRound", sans-serif;
+}
+.gnb-chip.active { background: #222; color: #fff; border-color: #222; }
+.gnb-right { margin-left: auto; display: flex; gap: 10px; align-items: center; font-size: 12px; color: #aaa; }
+.res-indicator {
+  font-size: 11px; font-weight: 800; color: #ff4600;
+  background: #fff0eb; border: 1px solid #ffd0bc;
+  border-radius: 99px; padding: 3px 10px;
+}
 
-  /* 어제 수정본과 동일한 패턴: vh 먼저, dvh로 덮어쓰기 */
-  .app {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    height: 100dvh;
-    background: #fff;
-  }
+/* ── 전체 레이아웃 ── */
+.app { display: flex; flex-direction: column; height: 100vh; }
+.body { display: flex; flex: 1; overflow: hidden; min-height: 0; }
 
-  /* 실제 대시보드처럼 고정 px 높이를 가진 영역들 */
-  .frame {
-    flex: 1;
-    display: flex;
-    gap: 12px;
-    padding: 16px;
-    min-height: 0; /* 이게 없으면 flex 자식이 넘칠 때 더 잘 드러남 */
-    overflow: visible; /* 의도적으로 hidden 안 줌 (production과 동일 가정) */
-  }
-  .left, .right { background: #f2f2f2; border-radius: 12px; }
-  .left { flex: 2; padding: 16px; }
-  .right { flex: 1; padding: 16px; }
+/* ── 기본 틀 ── */
+.base-area {
+  flex: 1; background: #f2f2f2;
+  display: grid;
+  gap: 10px; padding: 10px;
+  min-width: 0; min-height: 0;
+  overflow: hidden;
+}
+.base-cell {
+  background: #fff; border: 1px solid #DCDCDC; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; text-align: center; gap: 4px; overflow: hidden;
+}
+.lbl { font-size: 11px; color: #aaa; }
+.cell-datetime { color: #185FA5; }
+.cell-weather  { color: #185FA5; }
+.cell-notice   { background: #fafafa; color: #666; flex-direction: row; justify-content: flex-start; padding: 0 18px; font-size: 15px; font-weight: 700; }
+.cell-timetable { background: #fff; }
+.cell-schedule  { background: #fff; }
 
-  .clock { font-size: 56px; font-weight: 700; color: #222; }
-  .notice { font-size: 44px; color: #555; margin: 16px 0; }
+.tt-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 13px; color: #27500A; padding: 6px 12px;
+  background: #EAF3DE; border-radius: 5px; width: 100%;
+}
+.tt-row.current { background: #3B6E25; color: #fff; }
+.sc-row {
+  font-size: 13px; color: #3C3489; padding: 6px 12px;
+  background: #EEEDFE; border-radius: 5px; width: 100%;
+}
+.meal-box {
+  width: 100%; padding: 8px 12px;
+  background: #fff0eb; border: 0.5px solid #ffd0bc; border-radius: 6px;
+}
+.meal-title { font-size: 11px; color: #cc3d00; font-weight: 800; }
+.meal-content { font-size: 12px; color: #854F0B; margin-top: 3px; }
 
-  .timetable-row, .widget-block {
-    height: 64px;
-    background: #fff;
-    border: 1px solid #dcdcdc;
-    border-radius: 8px;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    padding: 0 12px;
-    font-size: 14px;
-  }
+/* ── 위젯 영역 ── */
+.widget-wrap {
+  background: #e0e0de;
+  display: flex; flex-direction: column;
+  flex-shrink: 0; overflow: hidden;
+  transition: width .25s ease, height .25s ease;
+}
+.widget-wrap.folded-h { width: 0 !important; border: none !important; overflow: hidden; }
+.widget-wrap.folded-v { height: 0 !important; border: none !important; overflow: hidden; }
 
-  footer.bar {
-    height: 56px;
-    background: #ff4600;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    flex-shrink: 0;
-  }
+.widget-topbar {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 8px; flex-shrink: 0;
+}
+.w-btn {
+  font-size: 10px; font-weight: 800; font-family: "NanumSquareRound", sans-serif;
+  padding: 4px 10px; border-radius: 99px;
+  border: 1.5px solid #DCDCDC; background: #fff; color: #555; cursor: pointer;
+}
+.fold-btn {
+  margin-left: auto; font-size: 12px; color: #888;
+  background: #fff; border: 1.5px solid #DCDCDC; border-radius: 99px;
+  padding: 4px 10px; cursor: pointer; font-weight: 800;
+  font-family: "NanumSquareRound", sans-serif;
+  transition: all .15s;
+}
+.fold-btn:hover { background: #f2f2f2; }
 
-  /* 실시간 측정값 표시 패널 */
-  #debug {
-    position: fixed;
-    bottom: 60px;
-    left: 8px;
-    right: 8px;
-    z-index: 9999;
-    background: rgba(0,0,0,0.85);
-    color: #0f0;
-    font-size: 11px;
-    font-family: monospace;
-    padding: 8px 10px;
-    border-radius: 8px;
-    line-height: 1.6;
-    white-space: pre-wrap;
-  }
-  #debug.warn { color: #ff6b35; }
+/* 폴드 해제 버튼 — 기본 틀 우측 or 하단에 노출 */
+.unfold-btn-h {
+  position: absolute; right: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 20px; height: 48px;
+  background: #e0e0de; border: 1px solid #ccc;
+  border-radius: 4px 0 0 4px;
+  display: none; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 11px; color: #888; font-weight: 800;
+  z-index: 10;
+}
+.unfold-btn-v {
+  position: absolute; bottom: 52px; left: 50%;
+  transform: translateX(-50%);
+  height: 20px; width: 80px;
+  background: #e0e0de; border: 1px solid #ccc;
+  border-radius: 4px 4px 0 0;
+  display: none; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 11px; color: #888; font-weight: 800;
+  z-index: 10;
+}
+.base-wrap {
+  flex: 1; position: relative; display: flex; flex-direction: column; min-height: 0; min-width: 0; overflow: hidden;
+}
+
+.widget-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0 8px; }
+.widget-scroll::-webkit-scrollbar { width: 4px; }
+.widget-scroll::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
+.widget-grid { display: grid; gap: 6px; padding-bottom: 6px; }
+.widget-cell {
+  background: #fff; border: 1px solid #DCDCDC; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 4px; overflow: hidden;
+}
+.w-lbl { font-size: 9px; color: #aaa; }
+.w-name { font-size: 13px; font-weight: 800; color: #333; }
+
+.paging-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 4px 10px; flex-shrink: 0;
+}
+.paging-arrow {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #fff; border: 1px solid #ddd;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: #aaa;
+}
+.dots { display: flex; gap: 4px; }
+.dot { width: 5px; height: 5px; border-radius: 50%; background: #ccc; }
+.dot.on { background: #ff4600; }
+
+/* ── 도구바 ── */
+.toolbar {
+  background: #fff; border-top: 1px solid #DCDCDC;
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 16px; flex-shrink: 0; height: 52px;
+}
+.tool-icon {
+  width: 34px; height: 34px; border-radius: 7px;
+  background: #f2f2f2; border: 1px solid #ddd;
+  display: flex; align-items: center; justify-content: center; font-size: 17px;
+}
+
+/* ── 시간표 테이블 ── */
+/* ── 시간표 ── */
+.tt-table { width:100%; border-collapse:collapse; font-family:"NanumSquareRound",sans-serif; }
+.tt-table th {
+  font-size:20px; color:#888; font-weight:700;
+  padding:10px 8px; text-align:center;
+  border-bottom:2px solid #e8e8e8;
+}
+.tt-table th.col-today { color:#185FA5; }
+.tt-table td {
+  font-size:20px; text-align:center;
+  padding:10px 8px; border-bottom:1px solid #f0f0f0; color:#1a1a1a;
+  vertical-align:middle;
+}
+.tt-table .td-time { font-size:15px; color:#bbb; line-height:1.6; white-space:nowrap; }
+.tt-table .td-sub { font-weight:800; font-size:22px; }
+.tt-table .td-sub.active { color:#185FA5; }
+.tt-table .col-today-cell { background:#EEF5FF; }
+.tt-table .col-today-cell .td-sub { color:#185FA5; }
+.tt-table tr.current-row td { background:transparent; }
+.tt-table tr.current-row .td-sub { color:#1a1a1a; }
+.tt-table tr.current-row td.col-today-cell { background:#EEF5FF; }
+.tt-table .lunch-row td {
+  color:#ff4600; font-size:18px; font-weight:800;
+  background:#fff7f5; padding:7px 0;
+  letter-spacing:0.5px;
+}
+.tt-title {
+  font-size:26px; font-weight:800; color:#1a1a1a;
+  text-align:center; padding:18px 0 14px;
+  border-bottom:2px solid #e8e8e8;
+  background:#fff; flex-shrink:0; width:100%;
+}
+
+/* ── 달력 ── */
+.cal-wrap { width:100%; }
+.cal-title {
+  font-size:26px; font-weight:800; color:#1a1a1a;
+  text-align:center; padding:18px 0 14px;
+  border-bottom:2px solid #e8e8e8;
+  background:#fff; flex-shrink:0; width:100%;
+}
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; padding:8px 0; }
+.cal-head { font-size:18px; text-align:center; padding:6px 0 10px; font-weight:700; color:#888; }
+.cal-head.sun { color:#E24B4A; }
+.cal-head.sat { color:#888; }
+.cal-day {
+  font-size:20px; text-align:center;
+  padding:6px 2px 2px; cursor:default; line-height:1.3;
+  color:#1a1a1a;
+}
+.cal-day.sun { color:#E24B4A; }
+.cal-day.sat { color:#888; }
+.cal-day.today {
+  background:#185FA5; color:#fff !important;
+  border-radius:50%; width:40px; height:40px;
+  display:flex; align-items:center; justify-content:center;
+  margin:auto; font-size:20px; font-weight:800;
+}
+.cal-day.empty { color:transparent; }
+.cal-event { font-size:13px; color:#185FA5; text-align:center; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:700; }
+.meal-box {
+  margin:12px 0; padding:10px 14px;
+  background:#fff7f5; border:1px solid #ffd0bc;
+  border-radius:10px;
+}
+.meal-title { font-size:18px; color:#cc3d00; font-weight:800; }
+.meal-content { font-size:18px; color:#854F0B; margin-top:4px; line-height:1.6; }
+
+/* ── 안내 오버레이 ── */
+.bp-notice {
+  position: fixed; bottom: 16px; right: 16px;
+  background: #1a1a1a; color: #fff; border-radius: 10px;
+  padding: 10px 16px; font-size: 11px; line-height: 1.6;
+  z-index: 999; max-width: 280px; pointer-events: none;
+  opacity: 0; transition: opacity .3s;
+}
+.bp-notice.show { opacity: 1; }
+.bp-title-text { font-weight: 800; font-size: 12px; margin-bottom: 4px; color: #ff4600; }
 </style>
 </head>
 <body>
-
 <div class="app" id="app">
-  <div class="frame">
-    <div class="left">
-      <div class="clock">14:32</div>
-      <div class="notice">오늘도 좋은 하루 보내세요 :)</div>
-      <div class="timetable-row">1교시 국어</div>
-      <div class="timetable-row">2교시 수학</div>
-      <div class="timetable-row">3교시 사회</div>
-      <div class="timetable-row">4교시 과학</div>
-      <div class="timetable-row">5교시 체육</div>
-      <div class="timetable-row">학사일정: 현장체험학습 안내</div>
+
+  <!-- GNB -->
+  <div class="gnb">
+    <span class="gnb-logo">🧰 Tool Kit</span>
+    <div style="display:flex; gap:6px;">
+      <button class="gnb-chip">수업도구</button>
+      <button class="gnb-chip active">대시보드</button>
     </div>
-    <div class="right">
-      <div class="widget-block">위젯 1 - 타이머</div>
-      <div class="widget-block">위젯 2 - 점수판</div>
-      <div class="widget-block">위젯 3 - 디데이</div>
-      <div class="widget-block">위젯 4 - 칭찬카드</div>
+    <div class="gnb-right">
+      <span class="res-indicator" id="resIndicator">— × —</span>
+      <span>*****님</span><span>|</span><span>로그아웃</span>
     </div>
   </div>
-  <footer class="bar">하단 고정 바</footer>
+
+  <!-- 바디 -->
+  <div class="body" id="body">
+
+    <!-- 기본 틀 래퍼 -->
+    <div class="base-wrap" id="baseWrap">
+
+      <!-- 기본 틀 그리드 -->
+      <div class="base-area" id="baseArea" style="grid-template-columns:1fr; grid-template-rows:auto auto 1fr;">
+
+        <!-- 날짜/시간 8 + 날씨 2 -->
+        <div style="display:flex; gap:10px; height:120px;">
+          <div class="base-cell cell-datetime" id="cellDatetime" style="flex:8; flex-direction:row; justify-content:center; gap:24px; overflow:hidden;">
+            <span id="dateVal" style="font-size:56px; font-weight:800; color:#1a1a1a; white-space:nowrap;"></span>
+            <span id="timeVal" style="font-size:56px; font-weight:800; color:#1a1a1a; white-space:nowrap;"></span>
+          </div>
+          <div class="base-cell cell-weather" id="weatherCell" style="flex:2; overflow:hidden;">
+            <span style="font-size:56px; line-height:1;" id="weatherIcon">⛅</span>
+            <div id="weatherText" style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+              <span style="font-size:32px; font-weight:800; color:#1a1a1a; line-height:1.2;">27°C</span>
+              <span style="font-size:18px; color:#aaa;">맑음</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 한줄 안내 -->
+        <div class="base-cell cell-notice" id="noticeCell" style="height:80px; font-size:44px; white-space:nowrap; overflow:hidden;">
+          <span id="noticeText">오늘 3교시 체육 준비물: 체육복, 운동화</span>
+        </div>
+
+        <!-- 시간표 + 학사일정: 1280 이상 좌우, 1280 미만 상하 -->
+        <div id="schedRow" style="display:flex; gap:10px; flex:1; min-height:0; overflow:hidden;">
+
+          <!-- 시간표 -->
+          <div class="base-cell cell-timetable" style="flex:1; padding:0; overflow:hidden; align-items:flex-start; flex-direction:column; border-radius:10px;">
+            <div class="tt-title" style="width:100%; flex-shrink:0;">3학년 1반 주간 시간표</div>
+            <div style="flex:1; overflow-y:auto; width:100%; padding:0 16px 16px;">
+            <table class="tt-table">
+              <thead>
+                <tr>
+                  <th>시간</th>
+                  <th>월</th><th>화</th><th>수</th><th>목</th>
+                  <th class="col-today">금</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="td-time">1교시<br>09:00~09:40</td>
+                  <td class="td-sub">국어</td><td class="td-sub">수학</td><td class="td-sub">사회</td><td class="td-sub">국어</td>
+                  <td class="td-sub col-today-cell">영어</td>
+                </tr>
+                <tr>
+                  <td class="td-time">2교시<br>09:50~10:30</td>
+                  <td class="td-sub">수학</td><td class="td-sub">국어</td><td class="td-sub">수학</td><td class="td-sub">과학</td>
+                  <td class="td-sub col-today-cell">국어</td>
+                </tr>
+                <tr class="current-row">
+                  <td class="td-time">3교시<br>10:40~11:20</td>
+                  <td class="td-sub">사회</td><td class="td-sub">과학</td><td class="td-sub">국어</td><td class="td-sub">수학</td>
+                  <td class="td-sub col-today-cell">수학</td>
+                </tr>
+                <tr>
+                  <td class="td-time">4교시<br>11:30~12:10</td>
+                  <td class="td-sub active">체육</td><td class="td-sub">미술</td><td class="td-sub active">영어</td><td class="td-sub active">체육</td>
+                  <td class="td-sub col-today-cell">미술</td>
+                </tr>
+                <tr class="lunch-row">
+                  <td colspan="6">점심시간</td>
+                </tr>
+                <tr>
+                  <td class="td-time">5교시<br>13:00~13:40</td>
+                  <td class="td-sub">음악</td><td class="td-sub">도덕</td><td class="td-sub">과학</td><td class="td-sub">음악</td>
+                  <td class="td-sub col-today-cell">사회</td>
+                </tr>
+                <tr>
+                  <td class="td-time">6교시<br>13:50~14:30</td>
+                  <td></td><td></td><td></td><td class="td-sub">도덕</td>
+                  <td class="td-sub col-today-cell"></td>
+                </tr>
+              </tbody>
+            </table>
+            </div>
+          </div>
+
+          <!-- 학사일정 + 급식 래퍼 -->
+          <div style="flex:1; display:flex; flex-direction:column; gap:10px; min-height:0; min-width:0;">
+          <!-- 학사일정 (달력) -->
+          <div class="base-cell cell-schedule" style="flex:1; padding:0; overflow:hidden; align-items:flex-start; flex-direction:column; border-radius:10px; min-height:0;">
+            <div class="cal-title" style="width:100%; flex-shrink:0;">아이스크림초등학교 학사일정</div>
+            <div style="flex:1; overflow-y:auto; width:100%; padding:0 16px 16px;">
+            <div class="cal-wrap" style="padding:4px 0;">
+              <div class="cal-grid">
+                <div class="cal-head sun">일</div><div class="cal-head">월</div><div class="cal-head">화</div>
+                <div class="cal-head">수</div><div class="cal-head">목</div><div class="cal-head">금</div>
+                <div class="cal-head sat">토</div>
+                <!-- 6월 2026 -->
+                <div class="cal-day empty"></div>
+                <div class="cal-day">1</div><div class="cal-day">2</div><div class="cal-day">3</div>
+                <div class="cal-day">4</div><div class="cal-day">5</div><div class="cal-day sat">6</div>
+                <div class="cal-day sun">7</div><div class="cal-day">8</div><div class="cal-day">9</div>
+                <div class="cal-day">10</div><div class="cal-day">11</div><div class="cal-day">12</div><div class="cal-day sat">13</div>
+                <div class="cal-day sun">14</div><div class="cal-day">15</div><div class="cal-day">16</div>
+                <div class="cal-day">17</div><div class="cal-day">18</div><div class="cal-day">19</div><div class="cal-day sat">20</div>
+                <div class="cal-day sun">21</div><div class="cal-day">22</div><div class="cal-day">23</div>
+                <div class="cal-day">24</div><div class="cal-day">25</div>
+                <div style="display:flex;flex-direction:column;align-items:center;">
+                  <div class="cal-day today">26</div>
+                </div>
+                <div class="cal-day sat">27<div class="cal-event">재량휴업</div></div>
+                <div class="cal-day sun">28</div><div class="cal-day">29</div><div class="cal-day">30</div>
+                <div class="cal-day empty"></div><div class="cal-day empty"></div><div class="cal-day empty"></div><div class="cal-day empty"></div>
+              </div>
+              <div style="margin-top:12px; background:#f5f5f5; border-radius:10px; padding:12px 14px;">
+                <div style="font-size:20px; font-weight:800; color:#1a1a1a; margin-bottom:8px;">오늘의 일정</div>
+                <div style="font-size:18px; color:#aaa;">오늘의 일정이 없습니다.</div>
+              </div>
+            </div>
+            <!-- 스크롤 영역 닫기 -->
+            </div>
+          <!-- 학사일정 셀 닫기 -->
+          </div>
+          <!-- 급식: 학사일정 하단, 동일 너비 -->
+          <div style="flex-shrink:0; background:#fff8f3; border:1.5px solid #ffd0bc; border-radius:10px; padding:14px 18px;">
+            <div class="meal-title">🍚 오늘의 급식</div>
+            <div class="meal-content" style="margin-top:6px;">잡곡밥 · 된장국 · 불고기 · 깍두기 · 우유</div>
+          </div>
+          <!-- 래퍼 닫기 -->
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- 폴드 해제 버튼 (가로 폴드시) -->
+      <div class="unfold-btn-h" id="unfoldH" onclick="toggleFold()">›</div>
+      <!-- 폴드 해제 버튼 (세로 폴드시) -->
+      <div class="unfold-btn-v" id="unfoldV" onclick="toggleFold()">∨ 위젯</div>
+
+    </div>
+
+    <!-- 위젯 영역 -->
+    <div class="widget-wrap" id="widgetWrap" style="width:420px; border-left:1px solid #ccc;">
+      <div class="widget-topbar">
+        <span class="w-btn">+ 위젯 추가</span>
+        <span class="w-btn">위젯 편집</span>
+        <button class="fold-btn" id="foldBtn" onclick="toggleFold()">폴드 &lt;</button>
+      </div>
+      <div class="widget-scroll" id="widgetScroll">
+        <div class="widget-grid" id="widgetGrid" style="grid-template-columns:200px 200px; grid-auto-rows:200px;">
+          <div class="widget-cell"><span class="w-lbl">소 (200×200)</span><span class="w-name">⏱ 타이머</span></div>
+          <div class="widget-cell"><span class="w-lbl">소</span><span class="w-name">🔊 효과음</span></div>
+          <div class="widget-cell" style="grid-column:1/span 2;"><span class="w-lbl">중 (400×200)</span><span class="w-name">🎯 점수판</span></div>
+          <div class="widget-cell" style="grid-column:1/span 2;"><span class="w-lbl">중</span><span class="w-name">📅 디데이</span></div>
+        </div>
+      </div>
+      <div class="paging-row">
+        <span class="paging-arrow">‹</span>
+        <div class="dots"><div class="dot on"></div><div class="dot"></div><div class="dot"></div></div>
+        <span class="paging-arrow">›</span>
+      </div>
+      <div class="toolbar">
+        <div class="tool-icon">⏱</div>
+        <div class="tool-icon">🎯</div>
+        <div class="tool-icon">✏️</div>
+        <div class="tool-icon">🌡</div>
+        <div class="tool-icon">📋</div>
+        <div style="margin-left:auto;"><div class="tool-icon">⚙️</div></div>
+      </div>
+    </div>
+
+  </div>
 </div>
 
-<div id="debug">측정 중...</div>
+<div class="bp-notice" id="bpNotice">
+  <div class="bp-title-text" id="bpTitle"></div>
+  <div id="bpDesc"></div>
+</div>
 
 <script>
-  function measure() {
-    const app = document.getElementById('app');
-    const frame = document.querySelector('.frame');
-    const dbg = document.getElementById('debug');
+const WIDGET_W = 420;
+let isFolded = false;
+let isHorizontal = true; // 현재 좌우 레이아웃 여부
+let lastBp = '';
+let noticeTimer;
 
-    const appRect = app.getBoundingClientRect();
-    const docHeight = document.documentElement.scrollHeight;
-    const winHeight = window.innerHeight;
-    const vvHeight = window.visualViewport ? window.visualViewport.height : null;
+// 시계
+function updateClock() {
+  const now = new Date();
+  const days = ['일','월','화','수','목','금','토'];
+  document.getElementById('dateVal').textContent =
+    `${now.getFullYear()}. ${String(now.getMonth()+1).padStart(2,'0')}. ${String(now.getDate()).padStart(2,'0')} (${days[now.getDay()]})`;
+  document.getElementById('timeVal').textContent =
+    `${String(now.getHours()).padStart(2,'0')} : ${String(now.getMinutes()).padStart(2,'0')}`;
+}
+updateClock();
+setInterval(() => { updateClock(); fitDatetimeFont(); }, 1000);
 
-    const isOverflowing = docHeight > winHeight + 1;
+// 폴드 토글
+function toggleFold() {
+  isFolded = !isFolded;
+  applyFold();
+}
 
-    dbg.className = isOverflowing ? 'warn' : '';
-    dbg.innerText =
-      `window.innerHeight: ${winHeight}px\n` +
-      `visualViewport.height: ${vvHeight ? vvHeight.toFixed(1) : 'N/A'}px\n` +
-      `.app 실제 높이: ${appRect.height.toFixed(1)}px\n` +
-      `document.scrollHeight: ${docHeight}px\n` +
-      (isOverflowing
-        ? `⚠️ 문서 높이가 화면보다 ${(docHeight - winHeight).toFixed(0)}px 더 큽니다 → 스크롤 발생 가능`
-        : `✅ 정상 범위 (스크롤 없음)`);
+function applyFold() {
+  const widgetWrap = document.getElementById('widgetWrap');
+  const foldBtn = document.getElementById('foldBtn');
+  const unfoldH = document.getElementById('unfoldH');
+  const unfoldV = document.getElementById('unfoldV');
+
+  if (isFolded) {
+    if (isHorizontal) {
+      widgetWrap.classList.add('folded-h');
+      unfoldH.style.display = 'flex';
+      unfoldV.style.display = 'none';
+      foldBtn.textContent = '펼치기 ›';
+    } else {
+      widgetWrap.classList.add('folded-v');
+      unfoldV.style.display = 'flex';
+      unfoldH.style.display = 'none';
+      foldBtn.textContent = '펼치기 ∧';
+    }
+  } else {
+    widgetWrap.classList.remove('folded-h', 'folded-v');
+    unfoldH.style.display = 'none';
+    unfoldV.style.display = 'none';
+    foldBtn.textContent = isHorizontal ? '폴드 <' : '폴드 ∨';
+  }
+}
+
+// 반응형
+function applyLayout() {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const body = document.getElementById('body');
+  const baseArea = document.getElementById('baseArea');
+  const widgetWrap = document.getElementById('widgetWrap');
+  const widgetGrid = document.getElementById('widgetGrid');
+  const foldBtn = document.getElementById('foldBtn');
+
+  document.getElementById('resIndicator').textContent = `${w} × ${h}`;
+
+  let bp = '';
+  let title = '';
+  let desc = '';
+
+  if (w >= 1280) {
+    bp = 'wide';
+    isHorizontal = true;
+    body.style.flexDirection = 'row';
+    baseArea.style.gridTemplateColumns = '1fr';
+    baseArea.style.gridTemplateRows = 'auto auto 1fr';
+    widgetWrap.style.width = WIDGET_W + 'px';
+    widgetWrap.style.height = 'auto';
+    widgetWrap.style.maxHeight = 'none';
+    widgetWrap.style.borderLeft = isFolded ? 'none' : '1px solid #ccc';
+    widgetWrap.style.borderTop = 'none';
+    widgetWrap.style.flexShrink = '0';
+    widgetGrid.style.gridTemplateColumns = '200px 200px';
+    widgetGrid.style.gridAutoRows = '200px';
+    foldBtn.textContent = isFolded ? '펼치기 ›' : '폴드 <';
+    // 1280 이상: 시간표+학사일정 좌우 배치
+    document.getElementById('schedRow').style.flexDirection = 'row';
+    // 날씨: 1280 이상 좌우 배치
+    document.getElementById('weatherCell').style.flexDirection = 'row';
+    document.getElementById('weatherCell').style.gap = '16px';
+    document.getElementById('weatherText').style.alignItems = 'flex-start';
+    title = w >= 1920 ? '① PC 1920×1080 — 기준 레이아웃' : '② PC 1280×720';
+    desc = '기본 틀 (좌) + 위젯 420px 고정 (우) · 폴드 시 기본 틀 100% 확장';
+  } else {
+    // 1280 미만: body는 row 유지, 좌측=기본틀(시간표/학사일정 상하), 우측=위젯 고정
+    bp = w >= 768 ? 'medium' : 'narrow';
+    isHorizontal = true;
+    body.style.flexDirection = 'row';
+    baseArea.style.gridTemplateColumns = '1fr';
+    baseArea.style.gridTemplateRows = 'auto auto 1fr';
+    widgetWrap.style.width = WIDGET_W + 'px';
+    widgetWrap.style.height = 'auto';
+    widgetWrap.style.maxHeight = 'none';
+    widgetWrap.style.borderLeft = isFolded ? 'none' : '1px solid #ccc';
+    widgetWrap.style.borderTop = 'none';
+    widgetWrap.style.flexShrink = '0';
+    widgetGrid.style.gridTemplateColumns = '200px 200px';
+    widgetGrid.style.gridAutoRows = '200px';
+    foldBtn.textContent = isFolded ? '펼치기 ›' : '폴드 <';
+    // 시간표 위 + 학사일정 아래 (상하 배치)
+    document.getElementById('schedRow').style.flexDirection = 'column';
+    // 날씨: 1280 미만 상하 배치
+    document.getElementById('weatherCell').style.flexDirection = 'column';
+    document.getElementById('weatherCell').style.gap = '4px';
+    document.getElementById('weatherText').style.alignItems = 'center';
+    if (w >= 1024) {
+      title = '④ 패드 가로 (1024~1279px)';
+      desc = '시간표(상)+학사일정(하) 좌측 · 위젯 420px 우측 고정';
+    } else if (w >= 768) {
+      title = '③ 1024px 미만';
+      desc = '시간표(상)+학사일정(하) 좌측 · 위젯 420px 우측 고정';
+    } else {
+      title = '⑤ 768px 미만';
+      desc = '시간표(상)+학사일정(하) 좌측 · 위젯 420px 우측 고정';
+    }
   }
 
-  measure();
-  window.addEventListener('resize', measure);
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', measure);
+  applyFold();
+
+  if (bp !== lastBp) {
+    lastBp = bp;
+    showNotice(title, desc);
   }
-  setInterval(measure, 500);
+}
+
+function showNotice(title, desc) {
+  const el = document.getElementById('bpNotice');
+  document.getElementById('bpTitle').textContent = title;
+  document.getElementById('bpDesc').textContent = desc;
+  el.classList.add('show');
+  clearTimeout(noticeTimer);
+  noticeTimer = setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+function fitWeatherFont() {
+  const cell = document.getElementById('weatherCell');
+  const icon = document.getElementById('weatherIcon');
+  const text = document.getElementById('weatherText');
+  if (!cell || !icon || !text) return;
+  const maxSize = 56;
+  const minSize = 16;
+  const cellW = cell.clientWidth;
+  const cellH = cell.clientHeight;
+  const isRow = cell.style.flexDirection === 'row';
+  let size = maxSize;
+
+  function applySize(s) {
+    icon.style.fontSize = s + 'px';
+    text.querySelectorAll('span').forEach((sp, i) => {
+      sp.style.fontSize = (i === 0 ? Math.max(s * 0.57, 12) : Math.max(s * 0.32, 10)) + 'px';
+    });
+  }
+
+  applySize(size);
+
+  if (isRow) {
+    // 가로 배치: 아이콘 + 텍스트가 너비 안에 들어올 때까지
+    while (size > minSize && cell.scrollWidth > cellW + 2) {
+      size -= 1;
+      applySize(size);
+    }
+  } else {
+    // 세로 배치: 셀 너비 기준으로 아이콘 크기 제한
+    // 아이콘이 셀 너비의 60% 이하가 되도록
+    const targetSize = Math.floor(cellW * 0.55);
+    size = Math.min(maxSize, Math.max(minSize, targetSize));
+    applySize(size);
+  }
+}
+
+function fitDatetimeFont() {
+  const cell = document.getElementById('cellDatetime');
+  const dateEl = document.getElementById('dateVal');
+  const timeEl = document.getElementById('timeVal');
+  if (!cell || !dateEl || !timeEl) return;
+  const maxSize = 56;
+  const minSize = 20;
+  let size = maxSize;
+  dateEl.style.fontSize = size + 'px';
+  timeEl.style.fontSize = size + 'px';
+  while ((dateEl.scrollWidth + timeEl.scrollWidth + 24) > cell.clientWidth - 24 && size > minSize) {
+    size -= 1;
+    dateEl.style.fontSize = size + 'px';
+    timeEl.style.fontSize = size + 'px';
+  }
+}
+
+function fitNoticeFont() {
+  const cell = document.getElementById('noticeCell');
+  const text = document.getElementById('noticeText');
+  if (!cell || !text) return;
+  const maxSize = 44;
+  const minSize = 16;
+  let size = maxSize;
+  text.style.fontSize = size + 'px';
+  while (text.scrollWidth > cell.clientWidth - 36 && size > minSize) {
+    size -= 1;
+    text.style.fontSize = size + 'px';
+  }
+}
+
+window.addEventListener('resize', () => { applyLayout(); fitNoticeFont();
+fitDatetimeFont();
+fitWeatherFont(); fitDatetimeFont(); });
+applyLayout();
+fitNoticeFont();
+fitDatetimeFont();
+fitWeatherFont();
 </script>
-
 </body>
 </html>
