@@ -2,202 +2,143 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>스크롤 버그 재현 테스트</title>
+<!-- 어제 수정과 동일하게 viewport-fit=cover 포함 -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>세로 스크롤 재현 테스트</title>
 <style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: -apple-system, "Apple SD Gothic Neo", "NanumSquareRound", sans-serif;
-    background: #f2f2f2;
-    color: #222;
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* 어제 수정본과 동일한 패턴: html, body만 overflow:hidden */
+  html, body {
+    height: 100%;
+    font-family: "NanumSquareRound", -apple-system, sans-serif;
+    background: #e8e8e6;
+    overflow: hidden;
   }
 
-  /* 상단 고정 컨트롤 패널 */
-  #panel {
-    position: sticky;
-    top: 0;
-    z-index: 999;
+  /* 어제 수정본과 동일한 패턴: vh 먼저, dvh로 덮어쓰기 */
+  .app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
     background: #fff;
-    border-bottom: 2px solid #ff4600;
-    padding: 12px 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   }
-  #panel h1 {
-    font-size: 16px;
-    margin: 0 0 8px;
-    color: #ff4600;
+
+  /* 실제 대시보드처럼 고정 px 높이를 가진 영역들 */
+  .frame {
+    flex: 1;
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    min-height: 0; /* 이게 없으면 flex 자식이 넘칠 때 더 잘 드러남 */
+    overflow: visible; /* 의도적으로 hidden 안 줌 (production과 동일 가정) */
   }
-  #status {
-    font-size: 13px;
-    background: #fff7f3;
-    border: 1px solid #ffd6c2;
+  .left, .right { background: #f2f2f2; border-radius: 12px; }
+  .left { flex: 2; padding: 16px; }
+  .right { flex: 1; padding: 16px; }
+
+  .clock { font-size: 56px; font-weight: 700; color: #222; }
+  .notice { font-size: 44px; color: #555; margin: 16px 0; }
+
+  .timetable-row, .widget-block {
+    height: 64px;
+    background: #fff;
+    border: 1px solid #dcdcdc;
     border-radius: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    font-size: 14px;
+  }
+
+  footer.bar {
+    height: 56px;
+    background: #ff4600;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  /* 실시간 측정값 표시 패널 */
+  #debug {
+    position: fixed;
+    bottom: 60px;
+    left: 8px;
+    right: 8px;
+    z-index: 9999;
+    background: rgba(0,0,0,0.85);
+    color: #0f0;
+    font-size: 11px;
+    font-family: monospace;
     padding: 8px 10px;
-    margin-bottom: 10px;
+    border-radius: 8px;
     line-height: 1.6;
     white-space: pre-wrap;
   }
-  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 6px;}
-  button {
-    background: #ff4600;
-    color: white;
-    border: none;
-    border-radius: 999px;
-    padding: 8px 14px;
-    font-size: 13px;
-    font-weight: 600;
-    -webkit-tap-highlight-color: transparent;
-  }
-  button.secondary {
-    background: #dcdcdc;
-    color: #333;
-  }
-  button.danger {
-    background: #555;
-  }
-  input[type="text"] {
-    flex: 1;
-    min-width: 180px;
-    padding: 8px 10px;
-    border: 1px solid #dcdcdc;
-    border-radius: 8px;
-    font-size: 13px;
-    background: #f2f2f2;
-  }
-
-  /* 세로 스크롤을 만들기 위한 긴 콘텐츠 */
-  .section {
-    padding: 24px 16px;
-    border-bottom: 1px dashed #dcdcdc;
-  }
-  .section h2 {
-    color: #ff4600;
-    font-size: 15px;
-  }
-  .block {
-    height: 120px;
-    border-radius: 12px;
-    margin: 10px 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    color: #fff;
-  }
-
-  /* 가로 스크롤을 만들기 위한 와이드 콘텐츠 */
-  .hscroll {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding: 10px 16px;
-    -webkit-overflow-scrolling: touch;
-  }
-  .hcard {
-    flex: 0 0 160px;
-    height: 100px;
-    border-radius: 12px;
-    background: #ffb088;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-size: 13px;
-  }
-
-  footer {
-    padding: 30px 16px 60px;
-    text-align: center;
-    color: #999;
-    font-size: 12px;
-  }
+  #debug.warn { color: #ff6b35; }
 </style>
 </head>
 <body>
 
-<div id="panel">
-  <h1>📜 스크롤 버그 재현 테스트</h1>
-  <div id="status">상태 확인 중...</div>
-  <div class="row">
-    <button onclick="lockOverflow()">🔒 overflow:hidden 적용 (대시보드 상황 흉내)</button>
-    <button class="secondary" onclick="unlockOverflow()">🔓 overflow 초기화</button>
+<div class="app" id="app">
+  <div class="frame">
+    <div class="left">
+      <div class="clock">14:32</div>
+      <div class="notice">오늘도 좋은 하루 보내세요 :)</div>
+      <div class="timetable-row">1교시 국어</div>
+      <div class="timetable-row">2교시 수학</div>
+      <div class="timetable-row">3교시 사회</div>
+      <div class="timetable-row">4교시 과학</div>
+      <div class="timetable-row">5교시 체육</div>
+      <div class="timetable-row">학사일정: 현장체험학습 안내</div>
+    </div>
+    <div class="right">
+      <div class="widget-block">위젯 1 - 타이머</div>
+      <div class="widget-block">위젯 2 - 점수판</div>
+      <div class="widget-block">위젯 3 - 디데이</div>
+      <div class="widget-block">위젯 4 - 칭찬카드</div>
+    </div>
   </div>
-  <div class="row">
-    <input type="text" id="toolkitUrl" placeholder="여기에 툴킷 페이지 URL 입력 (예: https://toolkit.i-scream.co.kr/...)">
-  </div>
-  <div class="row">
-    <button class="danger" onclick="goToToolkit()">➡️ 위 URL로 이동 (현재 overflow 상태 유지한 채)</button>
-  </div>
+  <footer class="bar">하단 고정 바</footer>
 </div>
 
-<div class="hscroll" id="hscrollDemo">
-  <div class="hcard">가로 카드 1</div>
-  <div class="hcard">가로 카드 2</div>
-  <div class="hcard">가로 카드 3</div>
-  <div class="hcard">가로 카드 4</div>
-  <div class="hcard">가로 카드 5</div>
-  <div class="hcard">가로 카드 6</div>
-  <div class="hcard">가로 카드 7</div>
-  <div class="hcard">가로 카드 8</div>
-</div>
-
-<div id="content"></div>
-
-<footer>
-  이 페이지는 overflow 상태 누출 / iOS 동적 뷰포트 문제를 재현하기 위한 임시 테스트 페이지입니다.
-</footer>
+<div id="debug">측정 중...</div>
 
 <script>
-  const colors = ['#ff4600','#ff6b35','#ffb088','#555','#999'];
+  function measure() {
+    const app = document.getElementById('app');
+    const frame = document.querySelector('.frame');
+    const dbg = document.getElementById('debug');
 
-  // 세로 스크롤용 더미 섹션 생성
-  const content = document.getElementById('content');
-  for (let i = 1; i <= 15; i++) {
-    const section = document.createElement('div');
-    section.className = 'section';
-    section.innerHTML = `
-      <h2>섹션 ${i}</h2>
-      <div class="block" style="background:${colors[i % colors.length]}">콘텐츠 블록 ${i}</div>
-    `;
-    content.appendChild(section);
+    const appRect = app.getBoundingClientRect();
+    const docHeight = document.documentElement.scrollHeight;
+    const winHeight = window.innerHeight;
+    const vvHeight = window.visualViewport ? window.visualViewport.height : null;
+
+    const isOverflowing = docHeight > winHeight + 1;
+
+    dbg.className = isOverflowing ? 'warn' : '';
+    dbg.innerText =
+      `window.innerHeight: ${winHeight}px\n` +
+      `visualViewport.height: ${vvHeight ? vvHeight.toFixed(1) : 'N/A'}px\n` +
+      `.app 실제 높이: ${appRect.height.toFixed(1)}px\n` +
+      `document.scrollHeight: ${docHeight}px\n` +
+      (isOverflowing
+        ? `⚠️ 문서 높이가 화면보다 ${(docHeight - winHeight).toFixed(0)}px 더 큽니다 → 스크롤 발생 가능`
+        : `✅ 정상 범위 (스크롤 없음)`);
   }
 
-  function updateStatus(msg) {
-    const b = getComputedStyle(document.body);
-    const h = getComputedStyle(document.documentElement);
-    document.getElementById('status').innerText =
-      (msg ? msg + '\n' : '') +
-      `body overflow: ${b.overflow} (x:${b.overflowX} / y:${b.overflowY})\n` +
-      `html overflow: ${h.overflow} (x:${h.overflowX} / y:${h.overflowY})\n` +
-      `viewport height: ${window.innerHeight}px / document height: ${document.documentElement.scrollHeight}px`;
+  measure();
+  window.addEventListener('resize', measure);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', measure);
   }
-
-  function lockOverflow() {
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
-    updateStatus('✅ overflow:hidden 적용됨 (대시보드가 떠나면서 정리를 안 했다고 가정한 상태)');
-  }
-
-  function unlockOverflow() {
-    document.body.style.overflow = '';
-    document.documentElement.style.overflow = '';
-    updateStatus('✅ overflow 초기화됨');
-  }
-
-  function goToToolkit() {
-    const url = document.getElementById('toolkitUrl').value.trim();
-    if (!url) {
-      alert('툴킷 URL을 먼저 입력해주세요.');
-      return;
-    }
-    // 현재 탭에서 그대로 이동 (새 페이지 로드가 아니라 SPA 라우팅처럼 동작하길 기대하는 상황을 가정)
-    location.href = url;
-  }
-
-  updateStatus();
-  window.addEventListener('resize', () => updateStatus());
-  setInterval(updateStatus, 1000);
+  setInterval(measure, 500);
 </script>
 
 </body>
