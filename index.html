@@ -23,6 +23,14 @@ html, body { height: 100%; font-family: "NanumSquareRound", sans-serif; backgrou
   font-family: "NanumSquareRound", sans-serif;
 }
 .gnb-chip.active { background: #222; color: #fff; border-color: #222; }
+.gnb-base-settings {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; border: 1.5px solid #DCDCDC; background: #fff;
+  font-size: 13px; cursor: pointer; margin-left: 2px;
+  transition: all .15s;
+}
+.gnb-base-settings:hover { background: #f7f7f7; border-color: #ccc; }
 .gnb-right { margin-left: auto; display: flex; gap: 10px; align-items: center; font-size: 12px; color: #aaa; }
 .res-indicator {
   font-size: 11px; font-weight: 800; color: #ff4600;
@@ -31,7 +39,30 @@ html, body { height: 100%; font-family: "NanumSquareRound", sans-serif; backgrou
 }
 
 /* ── 전체 레이아웃 ── */
-.app { display: flex; flex-direction: column; height: 100vh; }
+.app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+
+/* ── 모드 슬라이드 트랙 ── */
+.mode-track-outer {
+  flex: 1; overflow: hidden; position: relative; min-height: 0;
+}
+.mode-track {
+  display: flex; width: 200%; height: 100%;
+  transform: translateX(0%);
+  transition: transform .35s cubic-bezier(.4,0,.2,1);
+}
+.mode-track.show-classroom { transform: translateX(0%); }
+.mode-track.show-dashboard { transform: translateX(-50%); }
+.mode-panel { width: 50%; height: 100%; flex-shrink: 0; overflow: hidden; }
+.mode-classroom { background: #fff; }
+.mode-empty {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; color: #ccc;
+}
+.mode-empty-icon { font-size: 64px; opacity: .5; }
+.mode-empty-text { font-size: 16px; font-weight: 700; color: #bbb; }
+.mode-dashboard { display: flex; flex-direction: column; height: 100%; }
+
 .body { display: flex; flex: 1; overflow: hidden; min-height: 0; }
 
 /* ── 기본 틀 ── */
@@ -123,6 +154,17 @@ html, body { height: 100%; font-family: "NanumSquareRound", sans-serif; backgrou
 .base-wrap {
   flex: 1; position: relative; display: flex; flex-direction: column; min-height: 0; min-width: 0; overflow: hidden;
 }
+.base-settings-btn {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 800; font-family: "NanumSquareRound", sans-serif;
+  padding: 6px 12px; border-radius: 99px;
+  background: #fff; border: 1.5px solid #DCDCDC; color: #555;
+  cursor: pointer; flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  transition: all .15s;
+}
+.base-settings-btn:hover { background: #f7f7f7; border-color: #ccc; }
+.base-settings-btn .gear-icon { font-size: 13px; }
 
 .widget-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0 8px; }
 .widget-scroll::-webkit-scrollbar { width: 4px; }
@@ -241,17 +283,32 @@ html, body { height: 100%; font-family: "NanumSquareRound", sans-serif; backgrou
 }
 .bp-notice.show { opacity: 1; }
 .bp-title-text { font-weight: 800; font-size: 12px; margin-bottom: 4px; color: #ff4600; }
+
+/* ── 기본 틀 설정 모달 (iframe) ── */
+.settings-modal-bg {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+  display: none; align-items: flex-start; justify-content: center;
+  padding: 32px 16px; z-index: 1000;
+}
+.settings-modal-bg.show { display: flex; }
+.settings-modal-frame {
+  width: 100%; max-width: 720px; height: 85vh; max-height: 760px;
+  border: none; border-radius: 12px;
+  background: #fff;
+}
 </style>
 </head>
 <body>
+<button id="fakeLoginBtn" style="position:fixed; top:8px; right:8px; z-index:99998; background:#185FA5; color:#fff; border:none; border-radius:8px; padding:8px 14px; font-size:12px; font-weight:800; font-family:'NanumSquareRound',sans-serif; cursor:pointer;" onclick="location.href='login-sim.html'">🔁 A/B 테스트 페이지로 이동</button>
 <div class="app" id="app">
 
   <!-- GNB -->
   <div class="gnb">
     <span class="gnb-logo">🧰 Tool Kit</span>
-    <div style="display:flex; gap:6px;">
-      <button class="gnb-chip">수업도구</button>
-      <button class="gnb-chip active">대시보드</button>
+    <div style="display:flex; gap:6px; align-items:center;">
+      <button class="gnb-chip" id="tabClassroom" onclick="switchGnbTab('classroom')">수업도구</button>
+      <button class="gnb-chip active" id="tabDashboard" onclick="switchGnbTab('dashboard')">대시보드</button>
+      <button class="gnb-base-settings" id="gnbBaseSettings" onclick="openBaseSettings()" title="기본 틀 설정">⚙️</button>
     </div>
     <div class="gnb-right">
       <span class="res-indicator" id="resIndicator">— × —</span>
@@ -259,8 +316,22 @@ html, body { height: 100%; font-family: "NanumSquareRound", sans-serif; backgrou
     </div>
   </div>
 
-  <!-- 바디 -->
-  <div class="body" id="body">
+  <!-- 모드 슬라이드 트랙: 좌=수업도구(빈화면) / 우=대시보드 -->
+  <div class="mode-track-outer">
+  <div class="mode-track show-dashboard" id="modeTrack">
+
+    <!-- 수업도구 모드: 빈 화면 -->
+    <div class="mode-panel mode-classroom">
+      <div class="mode-empty">
+        <span class="mode-empty-icon">🧰</span>
+        <p class="mode-empty-text">수업도구 화면</p>
+      </div>
+    </div>
+
+    <!-- 대시보드 모드 -->
+    <div class="mode-panel mode-dashboard">
+      <!-- 바디 -->
+      <div class="body" id="body">
 
     <!-- 기본 틀 래퍼 -->
     <div class="base-wrap" id="baseWrap">
@@ -429,11 +500,22 @@ html, body { height: 100%; font-family: "NanumSquareRound", sans-serif; backgrou
     </div>
 
   </div>
+  <!-- 대시보드 모드 패널 닫기 -->
+  </div>
+  <!-- 모드 트랙 닫기 -->
+  </div>
+  <!-- 모드 트랙 아우터 닫기 -->
+  </div>
 </div>
 
 <div class="bp-notice" id="bpNotice">
   <div class="bp-title-text" id="bpTitle"></div>
   <div id="bpDesc"></div>
+</div>
+
+<!-- 기본 틀 설정 모달 -->
+<div class="settings-modal-bg" id="settingsModalBg">
+  <iframe class="settings-modal-frame" id="settingsModalFrame" src="" title="기본 틀 설정"></iframe>
 </div>
 
 <script>
@@ -456,6 +538,51 @@ updateClock();
 setInterval(() => { updateClock(); fitDatetimeFont(); }, 1000);
 
 // 폴드 토글
+function openBaseSettings() {
+  const bg = document.getElementById('settingsModalBg');
+  const frame = document.getElementById('settingsModalFrame');
+  frame.src = '대시보드_세팅.html';
+  bg.classList.add('show');
+}
+
+function closeBaseSettings() {
+  const bg = document.getElementById('settingsModalBg');
+  const frame = document.getElementById('settingsModalFrame');
+  bg.classList.remove('show');
+  frame.src = '';
+}
+
+window.addEventListener('message', (e) => {
+  if (e.data === 'closeBaseSettings') closeBaseSettings();
+});
+
+function switchGnbTab(tab) {
+  const classroomTab = document.getElementById('tabClassroom');
+  const dashboardTab = document.getElementById('tabDashboard');
+  const gear = document.getElementById('gnbBaseSettings');
+  const track = document.getElementById('modeTrack');
+  if (tab === 'dashboard') {
+    classroomTab.classList.remove('active');
+    dashboardTab.classList.add('active');
+    gear.style.display = 'flex';
+    track.classList.remove('show-classroom');
+    track.classList.add('show-dashboard');
+  } else {
+    dashboardTab.classList.remove('active');
+    classroomTab.classList.add('active');
+    gear.style.display = 'none';
+    track.classList.remove('show-dashboard');
+    track.classList.add('show-classroom');
+  }
+  // 슬라이드 애니메이션 종료 후 레이아웃 재계산
+  setTimeout(() => {
+    applyLayout();
+    fitNoticeFont();
+    fitDatetimeFont();
+    fitWeatherFont();
+  }, 360);
+}
+
 function toggleFold() {
   isFolded = !isFolded;
   applyFold();
@@ -489,7 +616,8 @@ function applyFold() {
 
 // 반응형
 function applyLayout() {
-  const w = window.innerWidth;
+  const bodyEl = document.getElementById('body');
+  const w = bodyEl ? bodyEl.clientWidth : window.innerWidth;
   const h = window.innerHeight;
   const body = document.getElementById('body');
   const baseArea = document.getElementById('baseArea');
@@ -651,6 +779,67 @@ applyLayout();
 fitNoticeFont();
 fitDatetimeFont();
 fitWeatherFont();
+
+// ── 스크롤 버그 재현 확인용 디버그 오버레이 (원본 로직에 영향 없음) ──
+(function () {
+  const navType = sessionStorage.getItem('navType') || 'fresh-entry';
+  sessionStorage.removeItem('navType');
+
+  const box = document.createElement('div');
+  box.id = 'scrollDebugBox';
+  box.style.cssText = `
+    position: fixed; bottom: 8px; left: 8px; right: 8px; z-index: 99999;
+    background: rgba(0,0,0,0.88); color: #0f0; font-size: 10.5px;
+    font-family: monospace; padding: 8px 10px; border-radius: 8px;
+    line-height: 1.55; white-space: pre-wrap; pointer-events: none;
+  `;
+  document.body.appendChild(box);
+
+  const tagMap = {
+    'fresh-entry': '🆕최초진입',
+    'direct-no-scroll': '①스크롤없이이동',
+    'after-scroll': '②스크롤후이동'
+  };
+  const tag = (tagMap[navType] || navType) + ' ';
+  const log = [];
+  function snapshot(label) {
+    const bodyEl = document.getElementById('body');
+    const appEl = document.getElementById('app');
+    const docH = document.documentElement.scrollHeight;
+    const winH = window.innerHeight;
+    const vvH = window.visualViewport ? window.visualViewport.height : null;
+    const bw = bodyEl ? bodyEl.clientWidth : null;
+    const ah = appEl ? appEl.getBoundingClientRect().height : null;
+    const overflowing = docH > winH + 1;
+    log.push({ label: tag + label, bw, ah: ah && ah.toFixed(1), docH, winH, vvH: vvH && vvH.toFixed(1), overflowing });
+    render();
+  }
+
+  function render() {
+    box.innerText = log.map(e =>
+      `[${e.label}] bodyW:${e.bw} appH:${e.ah} doc:${e.docH} win:${e.winH} vv:${e.vvH} ${e.overflowing ? '⚠️SCROLL' : '✅'}`
+    ).join('\n');
+  }
+
+  // 스크립트 실행 즉시 (applyLayout 최초 호출 직후 시점)
+  snapshot('script-end');
+  // 다음 프레임
+  requestAnimationFrame(() => snapshot('raf'));
+  // load 이벤트 (폰트 등 리소스 로드 완료 시점)
+  window.addEventListener('load', () => snapshot('load'));
+  // 폰트 로드 완료 시점 (지원 브라우저)
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => snapshot('fonts-ready'));
+  }
+  // 300ms, 1000ms 후 (레이아웃 안정화 이후)
+  setTimeout(() => snapshot('t+300ms'), 300);
+  setTimeout(() => snapshot('t+1000ms'), 1000);
+  // 리사이즈/회전 시
+  window.addEventListener('resize', () => snapshot('resize'));
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => snapshot('vv-resize'));
+  }
+})();
 </script>
 </body>
 </html>
