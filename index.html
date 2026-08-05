@@ -2,844 +2,3005 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>툴킷 대시보드</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>툴킷 대시보드 — 기본 틀 설정</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Square+Round:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; font-family: "NanumSquareRound", sans-serif; background: #e8e8e6; overflow: hidden; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── GNB ── */
-.gnb {
-  height: 48px; background: #fff;
-  border-bottom: 1px solid #DCDCDC;
-  display: flex; align-items: center; gap: 10px;
-  padding: 0 20px; flex-shrink: 0;
-}
-.gnb-logo { font-size: 15px; font-weight: 800; color: #222; }
-.gnb-chip {
-  font-size: 12px; font-weight: 800; padding: 5px 16px;
-  border-radius: 99px; border: 1.5px solid #DCDCDC;
-  color: #888; cursor: pointer; background: #fff;
-  font-family: "NanumSquareRound", sans-serif;
-}
-.gnb-chip.active { background: #222; color: #fff; border-color: #222; }
-.gnb-base-settings {
-  width: 28px; height: 28px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 50%; border: 1.5px solid #DCDCDC; background: #fff;
-  font-size: 13px; cursor: pointer; margin-left: 2px;
-  transition: all .15s;
-}
-.gnb-base-settings:hover { background: #f7f7f7; border-color: #ccc; }
-.gnb-right { margin-left: auto; display: flex; gap: 10px; align-items: center; font-size: 12px; color: #aaa; }
-.res-indicator {
-  font-size: 11px; font-weight: 800; color: #ff4600;
-  background: #fff0eb; border: 1px solid #ffd0bc;
-  border-radius: 99px; padding: 3px 10px;
-}
+  :root {
+    --font: "NanumSquareRound", "나눔스퀘어라운드", sans-serif;
+    --accent: #ff4600;
+    --accent-light: #fff0eb;
+    --bg-gray: #f2f2f2;
+    --line: #DCDCDC;
+    --text-primary: #1a1a1a;
+    --text-secondary: #555555;
+    --text-tertiary: #999999;
+    --blue: #cc3d00;
+    --blue-light: #fff0eb;
+    --white: #ffffff;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+  }
 
-/* ── 전체 레이아웃 ── */
-.app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+  body {
+    font-family: var(--font);
+    background: #e8e8e8;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 32px 16px;
+  }
 
-/* ── 모드 슬라이드 트랙 ── */
-.mode-track-outer {
-  flex: 1; overflow: hidden; position: relative; min-height: 0;
-}
-.mode-track {
-  display: flex; width: 200%; height: 100%;
-  transform: translateX(0%);
-  transition: transform .35s cubic-bezier(.4,0,.2,1);
-}
-.mode-track.show-classroom { transform: translateX(0%); }
-.mode-track.show-dashboard { transform: translateX(-50%); }
-.mode-panel { width: 50%; height: 100%; flex-shrink: 0; overflow: hidden; }
-.mode-classroom { background: #fff; }
-.mode-empty {
-  width: 100%; height: 100%;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 12px; color: #ccc;
-}
-.mode-empty-icon { font-size: 64px; opacity: .5; }
-.mode-empty-text { font-size: 16px; font-weight: 700; color: #bbb; }
-.mode-dashboard { display: flex; flex-direction: column; height: 100%; }
+  /* 오버레이 */
+  .overlay {
+    background: rgba(0,0,0,0.35);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    width: 100%;
+    max-width: 720px;
+  }
 
-.body { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+  /* 레이어 카드 */
+  .layer {
+    position: relative;
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
 
-/* ── 기본 틀 ── */
-.base-area {
-  flex: 1; background: #f2f2f2;
-  display: grid;
-  gap: 10px; padding: 10px;
-  min-width: 0; min-height: 0;
-  overflow: hidden;
-}
-.base-cell {
-  background: #fff; border: 1px solid #DCDCDC; border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  flex-direction: column; text-align: center; gap: 4px; overflow: hidden;
-}
-.lbl { font-size: 11px; color: #aaa; }
-.cell-datetime { color: #185FA5; }
-.cell-weather  { color: #185FA5; }
-.cell-notice   { background: #fafafa; color: #666; flex-direction: row; justify-content: flex-start; padding: 0 18px; font-size: 15px; font-weight: 700; }
-.cell-timetable { background: #fff; }
-.cell-schedule  { background: #fff; }
+  /* 헤더 */
+  .layer-header {
+    padding: 20px 24px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .layer-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+  .close-btn {
+    width: 28px; height: 28px;
+    border: none; background: none; cursor: pointer;
+    color: var(--text-tertiary);
+    font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: var(--radius-sm);
+  }
+  .close-btn:hover { background: var(--bg-gray); }
 
-.tt-row {
-  display: flex; justify-content: space-between; align-items: center;
-  font-size: 13px; color: #27500A; padding: 6px 12px;
-  background: #EAF3DE; border-radius: 5px; width: 100%;
-}
-.tt-row.current { background: #3B6E25; color: #fff; }
-.sc-row {
-  font-size: 13px; color: #3C3489; padding: 6px 12px;
-  background: #EEEDFE; border-radius: 5px; width: 100%;
-}
-.meal-box {
-  width: 100%; padding: 8px 12px;
-  background: #fff0eb; border: 0.5px solid #ffd0bc; border-radius: 6px;
-}
-.meal-title { font-size: 11px; color: #cc3d00; font-weight: 800; }
-.meal-content { font-size: 12px; color: #854F0B; margin-top: 3px; }
+  /* 상태 테스트용 임시 툴바 (QA 확인용, 실제 서비스에는 노출되지 않음) */
+  .dev-test-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    margin-bottom: 14px;
+    background: repeating-linear-gradient(45deg, #fafafa, #fafafa 6px, #f2f2f2 6px, #f2f2f2 12px);
+    border: 1px dashed var(--line);
+    border-radius: var(--radius-md);
+  }
+  .dev-test-label {
+    font-size: 10.5px;
+    font-weight: 800;
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+  }
+  .dev-test-btn {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-family: var(--font);
+  }
+  .dev-test-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-/* ── 위젯 영역 ── */
-.widget-wrap {
-  background: #e0e0de;
-  display: flex; flex-direction: column;
-  flex-shrink: 0; overflow: hidden;
-  transition: width .25s ease, height .25s ease;
-}
-.widget-wrap.folded-h { width: 0 !important; border: none !important; overflow: hidden; }
-.widget-wrap.folded-v { height: 0 !important; border: none !important; overflow: hidden; }
+  /* 학교 입력 */
+  .school-row { margin-bottom: 16px; }
+  .school-fields-grid {
+    display: grid;
+    grid-template-columns: 1fr 96px 96px;
+    gap: 10px;
+    align-items: end;
+  }
 
-.widget-topbar {
-  display: flex; align-items: center; gap: 5px;
-  padding: 6px 8px; flex-shrink: 0;
-}
-.w-btn {
-  font-size: 10px; font-weight: 800; font-family: "NanumSquareRound", sans-serif;
-  padding: 4px 10px; border-radius: 99px;
-  border: 1.5px solid #DCDCDC; background: #fff; color: #555; cursor: pointer;
-}
-.fold-btn {
-  margin-left: auto; font-size: 12px; color: #888;
-  background: #fff; border: 1.5px solid #DCDCDC; border-radius: 99px;
-  padding: 4px 10px; cursor: pointer; font-weight: 800;
-  font-family: "NanumSquareRound", sans-serif;
-  transition: all .15s;
-}
-.fold-btn:hover { background: #f2f2f2; }
+  /* 학교 정보 요약(축약) 상태 */
+  .school-summary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--bg-gray);
+    border-radius: var(--radius-md);
+  }
+  .school-summary-icon { font-size: 15px; flex-shrink: 0; }
+  .school-summary-text {
+    flex: 1;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+  }
+  .school-summary.filled .school-summary-text { color: var(--text-primary); }
+  .school-summary-btn {
+    flex-shrink: 0;
+    font-size: 11.5px;
+    font-weight: 800;
+    color: var(--accent);
+    background: var(--accent-light);
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    padding: 5px 12px;
+    cursor: pointer;
+    font-family: var(--font);
+  }
+  .school-summary-btn:hover { background: #ffe3d6; }
 
-/* 폴드 해제 버튼 — 기본 틀 우측 or 하단에 노출 */
-.unfold-btn-h {
-  position: absolute; right: 0; top: 50%;
-  transform: translateY(-50%);
-  width: 20px; height: 48px;
-  background: #e0e0de; border: 1px solid #ccc;
-  border-radius: 4px 0 0 4px;
-  display: none; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 11px; color: #888; font-weight: 800;
-  z-index: 10;
-}
-.unfold-btn-v {
-  position: absolute; bottom: 52px; left: 50%;
-  transform: translateX(-50%);
-  height: 20px; width: 80px;
-  background: #e0e0de; border: 1px solid #ccc;
-  border-radius: 4px 4px 0 0;
-  display: none; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 11px; color: #888; font-weight: 800;
-  z-index: 10;
-}
-.base-wrap {
-  flex: 1; position: relative; display: flex; flex-direction: column; min-height: 0; min-width: 0; overflow: hidden;
-}
-.base-settings-btn {
-  display: flex; align-items: center; gap: 5px;
-  font-size: 11px; font-weight: 800; font-family: "NanumSquareRound", sans-serif;
-  padding: 6px 12px; border-radius: 99px;
-  background: #fff; border: 1.5px solid #DCDCDC; color: #555;
-  cursor: pointer; flex-shrink: 0;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  transition: all .15s;
-}
-.base-settings-btn:hover { background: #f7f7f7; border-color: #ccc; }
-.base-settings-btn .gear-icon { font-size: 13px; }
+  /* 학교 정보 펼침 상태 — 요약 상태와 동일한 회색 박스 안에서 이어지도록 구성 */
+  .school-fields-view {
+    background: var(--bg-gray);
+    border-radius: var(--radius-md);
+    padding: 12px;
+  }
+  .school-fields-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .school-fields-label { font-size: 12.5px; font-weight: 700; color: var(--text-secondary); }
+  .school-fields-divider {
+    border-top: 1px solid var(--line);
+    margin: 0 0 12px;
+  }
+  .school-collapse-btn {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font);
+  }
+  .school-collapse-btn:hover { color: var(--accent); }
 
-.widget-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0 8px; }
-.widget-scroll::-webkit-scrollbar { width: 4px; }
-.widget-scroll::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
-.widget-grid { display: grid; gap: 6px; padding-bottom: 6px; }
-.widget-cell {
-  background: #fff; border: 1px solid #DCDCDC; border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  flex-direction: column; gap: 4px; overflow: hidden;
-}
-.w-lbl { font-size: 9px; color: #aaa; }
-.w-name { font-size: 13px; font-weight: 800; color: #333; }
+  .school-fields-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .school-cancel-btn {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 5px 12px;
+    cursor: pointer;
+    font-family: var(--font);
+  }
+  .school-cancel-btn:hover { background: var(--line); color: var(--text-secondary); }
+  .school-confirm-btn {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    border-radius: 999px;
+    padding: 5px 14px;
+    cursor: pointer;
+    font-family: var(--font);
+  }
+  .school-confirm-btn:hover { opacity: 0.9; }
 
-.paging-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 4px 10px; flex-shrink: 0;
-}
-.paging-arrow {
-  width: 22px; height: 22px; border-radius: 50%;
-  background: #fff; border: 1px solid #ddd;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; color: #aaa;
-}
-.dots { display: flex; gap: 4px; }
-.dot { width: 5px; height: 5px; border-radius: 50%; background: #ccc; }
-.dot.on { background: #ff4600; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field-label {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    display: flex; align-items: center; gap: 5px;
+  }
+  .badge-neis {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    background: var(--blue-light);
+    color: var(--blue);
+    font-weight: 800;
+  }
+  .field-input {
+    height: 36px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--white);
+    padding: 0 10px;
+    font-size: 13px;
+    font-family: var(--font);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    gap: 6px;
+  }
+  .field-input span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .field-input .arrow { color: var(--text-tertiary); font-size: 11px; transition: transform 0.15s; }
+  .field-input:hover { border-color: var(--text-tertiary); }
+  .field-input.open { border-color: var(--accent); }
+  .field-input.open .arrow { transform: rotate(180deg); color: var(--accent); }
+  .field-input.disabled {
+    cursor: not-allowed;
+    background: var(--white);
+    color: var(--text-tertiary);
+    opacity: 0.6;
+  }
+  .field-input.disabled span { color: var(--text-tertiary); }
+  .field-input.filled span { color: var(--text-primary); font-weight: 700; }
 
-/* ── 도구바 ── */
-.toolbar {
-  background: #fff; border-top: 1px solid #DCDCDC;
-  display: flex; align-items: center; gap: 8px;
-  padding: 0 16px; flex-shrink: 0; height: 52px;
-}
-.tool-icon {
-  width: 34px; height: 34px; border-radius: 7px;
-  background: #f2f2f2; border: 1px solid #ddd;
-  display: flex; align-items: center; justify-content: center; font-size: 17px;
-}
+  /* 학교 검색 - 직접 입력형 인풋 + 검색 버튼 */
+  .school-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .school-input-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+  }
+  .school-text-input {
+    width: 100%;
+    height: 36px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--white);
+    padding: 0 32px 0 10px;
+    font-size: 13px;
+    font-family: var(--font);
+    color: var(--text-primary);
+    outline: none;
+  }
+  .school-text-input::placeholder { color: var(--text-tertiary); }
+  .school-text-input:focus { border-color: var(--accent); }
+  .school-clear-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px; height: 18px;
+    border: none;
+    background: none;
+    color: var(--text-tertiary);
+    font-size: 13px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+  .school-clear-btn:hover { background: var(--line); color: var(--text-primary); }
+  .btn-school-search {
+    height: 36px;
+    padding: 0 16px;
+    flex-shrink: 0;
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--accent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    font-family: var(--font);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn-school-search:hover { opacity: 0.9; }
 
-/* ── 시간표 테이블 ── */
-/* ── 시간표 ── */
-.tt-table { width:100%; border-collapse:collapse; font-family:"NanumSquareRound",sans-serif; }
-.tt-table th {
-  font-size:20px; color:#888; font-weight:700;
-  padding:10px 8px; text-align:center;
-  border-bottom:2px solid #e8e8e8;
-}
-.tt-table th.col-today { color:#185FA5; }
-.tt-table td {
-  font-size:20px; text-align:center;
-  padding:10px 8px; border-bottom:1px solid #f0f0f0; color:#1a1a1a;
-  vertical-align:middle;
-}
-.tt-table .td-time { font-size:15px; color:#bbb; line-height:1.6; white-space:nowrap; }
-.tt-table .td-sub { font-weight:800; font-size:22px; }
-.tt-table .td-sub.active { color:#185FA5; }
-.tt-table .col-today-cell { background:#EEF5FF; }
-.tt-table .col-today-cell .td-sub { color:#185FA5; }
-.tt-table tr.current-row td { background:transparent; }
-.tt-table tr.current-row .td-sub { color:#1a1a1a; }
-.tt-table tr.current-row td.col-today-cell { background:#EEF5FF; }
-.tt-table .lunch-row td {
-  color:#ff4600; font-size:18px; font-weight:800;
-  background:#fff7f5; padding:7px 0;
-  letter-spacing:0.5px;
-}
-.tt-title {
-  font-size:26px; font-weight:800; color:#1a1a1a;
-  text-align:center; padding:18px 0 14px;
-  border-bottom:2px solid #e8e8e8;
-  background:#fff; flex-shrink:0; width:100%;
-}
+  /* 학교/학년/반 드롭다운 공통 */
+  .field { position: relative; }
+  .dropdown-panel {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    z-index: 20;
+    overflow: hidden;
+  }
+  .dropdown-panel.on { display: block; }
 
-/* ── 달력 ── */
-.cal-wrap { width:100%; }
-.cal-title {
-  font-size:26px; font-weight:800; color:#1a1a1a;
-  text-align:center; padding:18px 0 14px;
-  border-bottom:2px solid #e8e8e8;
-  background:#fff; flex-shrink:0; width:100%;
-}
-.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; padding:8px 0; }
-.cal-head { font-size:18px; text-align:center; padding:6px 0 10px; font-weight:700; color:#888; }
-.cal-head.sun { color:#E24B4A; }
-.cal-head.sat { color:#888; }
-.cal-day {
-  font-size:20px; text-align:center;
-  padding:6px 2px 2px; cursor:default; line-height:1.3;
-  color:#1a1a1a;
-}
-.cal-day.sun { color:#E24B4A; }
-.cal-day.sat { color:#888; }
-.cal-day.today {
-  background:#185FA5; color:#fff !important;
-  border-radius:50%; width:40px; height:40px;
-  display:flex; align-items:center; justify-content:center;
-  margin:auto; font-size:20px; font-weight:800;
-}
-.cal-day.empty { color:transparent; }
-.cal-event { font-size:13px; color:#185FA5; text-align:center; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:700; }
-.meal-box {
-  margin:12px 0; padding:10px 14px;
-  background:#fff7f5; border:1px solid #ffd0bc;
-  border-radius:10px;
-}
-.meal-title { font-size:18px; color:#cc3d00; font-weight:800; }
-.meal-content { font-size:18px; color:#854F0B; margin-top:4px; line-height:1.6; }
+  /* 학교 검색 패널 (넓게 확장) */
+  #schoolField .dropdown-panel {
+    left: 0;
+    width: max(100%, 300px);
+  }
+  .neis-search-box {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .neis-search-box input {
+    flex: 1;
+    height: 32px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 0 10px;
+    font-size: 12px;
+    font-family: var(--font);
+    outline: none;
+    color: var(--text-primary);
+  }
+  .neis-search-box input:focus { border-color: var(--accent); }
+  .neis-search-hint {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    padding: 6px 10px 0;
+  }
+  .neis-result-list {
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  .neis-result-item {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 9px 12px;
+    cursor: pointer;
+  }
+  .neis-result-item:hover { background: var(--accent-light); }
+  .neis-result-name {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .neis-result-addr {
+    font-size: 10.5px;
+    color: var(--text-tertiary);
+  }
+  .neis-empty {
+    padding: 20px 12px;
+    text-align: center;
+    font-size: 11.5px;
+    color: var(--text-tertiary);
+  }
+  .neis-loading {
+    padding: 20px 12px;
+    text-align: center;
+    font-size: 11.5px;
+    color: var(--text-tertiary);
+  }
 
-/* ── 안내 오버레이 ── */
-.bp-notice {
-  position: fixed; bottom: 16px; right: 16px;
-  background: #1a1a1a; color: #fff; border-radius: 10px;
-  padding: 10px 16px; font-size: 11px; line-height: 1.6;
-  z-index: 999; max-width: 280px; pointer-events: none;
-  opacity: 0; transition: opacity .3s;
-}
-.bp-notice.show { opacity: 1; }
-.bp-title-text { font-weight: 800; font-size: 12px; margin-bottom: 4px; color: #ff4600; }
+  /* 학년/반 선택 패널 */
+  .simple-select-list {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 4px;
+  }
+  .simple-select-item {
+    padding: 8px 10px;
+    font-size: 12.5px;
+    color: var(--text-primary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+  }
+  .simple-select-item:hover { background: var(--accent-light); }
+  .simple-select-item.selected {
+    background: var(--accent-light);
+    color: var(--accent);
+    font-weight: 800;
+  }
+  .simple-select-item-none {
+    margin-top: 4px;
+    border-top: 1px solid var(--line);
+    padding-top: 10px;
+    color: var(--text-secondary);
+  }
 
-/* ── 기본 틀 설정 모달 (iframe) ── */
-.settings-modal-bg {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.35);
-  display: none; align-items: flex-start; justify-content: center;
-  padding: 32px 16px; z-index: 1000;
-}
-.settings-modal-bg.show { display: flex; }
-.settings-modal-frame {
-  width: 100%; max-width: 720px; height: 85vh; max-height: 760px;
-  border: none; border-radius: 12px;
-  background: #fff;
-}
+  /* 탭 */
+  .tab-row {
+    display: flex;
+    gap: 0;
+  }
+  .tab {
+    padding: 10px 22px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: var(--font);
+    color: var(--text-tertiary);
+    cursor: pointer;
+    border: none;
+    background: none;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s;
+  }
+  .tab.on {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .tab:hover:not(.on) { color: var(--text-secondary); }
+
+  /* 본문 */
+  .layer-body {
+    padding: 20px 24px;
+    overflow-y: auto;
+    max-height: 520px;
+  }
+
+  /* 섹션 헤더 */
+  .section-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .section-label {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .badge-auto {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    background: var(--blue-light);
+    color: var(--blue);
+    font-weight: 800;
+  }
+  .section-action {
+    font-size: 12px;
+    color: var(--accent);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 700;
+  }
+  .section-action:hover { opacity: 0.8; }
+
+  /* NEIS 시간표 불러오기 버튼 */
+  .section-actions { display: flex; align-items: center; gap: 12px; }
+  .btn-neis-load {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+    font-weight: 800;
+    color: var(--accent);
+    background: var(--accent-light);
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: background 0.12s;
+  }
+  .btn-tooltip {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.4;
+    padding: 8px 10px;
+    border-radius: 6px;
+    width: 190px;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .15s;
+    z-index: 30;
+  }
+  .btn-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-bottom-color: #1a1a1a;
+  }
+  .btn-neis-load.is-disabled:hover .btn-tooltip { opacity: 1; }
+  .btn-neis-load:hover { background: #ffe3d6; }
+  .btn-neis-load:disabled,
+  .btn-neis-load.is-disabled {
+    color: var(--text-tertiary);
+    background: var(--bg-gray);
+    border-color: var(--line);
+    cursor: pointer;
+  }
+  .btn-neis-load.is-disabled:hover { background: var(--bg-gray); }
+  .btn-neis-load .icon { font-size: 12px; }
+
+  /* 안내 바 */
+  .info-bar {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    padding: 7px 12px;
+    background: var(--bg-gray);
+    border-radius: var(--radius-md);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* 주간 시간표 그리드 */
+  .tt-wrap {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .tt-grid {
+    display: grid;
+    grid-template-columns: 60px repeat(5, 1fr);
+  }
+  .tt-cell {
+    padding: 8px 4px;
+    font-size: 12px;
+    text-align: center;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    color: var(--text-primary);
+    font-family: var(--font);
+    position: relative;
+  }
+  .tt-cell:last-child { border-right: none; }
+  .tt-grid:last-child .tt-cell { border-bottom: none; }
+
+  .tt-head .tt-cell {
+    background: var(--bg-gray);
+    font-weight: 800;
+    font-size: 11px;
+    color: var(--text-secondary);
+    padding: 7px 4px;
+  }
+  .tt-head .tt-cell.today { color: var(--blue); background: var(--blue-light); }
+
+  .tt-cell.period {
+    font-weight: 800;
+    color: var(--accent);
+    background: var(--bg-gray);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    cursor: pointer;
+  }
+  .tt-cell.period:hover { background: var(--accent-light); }
+  .tt-cell.period .period-num { font-size: 12px; font-weight: 800; }
+  .tt-cell.period .period-time {
+    font-size: 8.5px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    letter-spacing: -0.2px;
+    white-space: nowrap;
+  }
+  .tt-cell.period:hover .period-time { color: var(--accent); }
+  .tt-cell.today-col { background: #fff5f0; }
+  .tt-cell.today-col.now-cell { background: #ffe0d0; font-weight: 800; color: #cc3d00; }
+  .tt-cell.now-row { position: relative; }
+  .tt-cell.now-row.period::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    border-radius: 0 2px 2px 0;
+  }
+  .tt-cell.editable:hover { background: var(--bg-gray); cursor: pointer; }
+  .tt-cell.empty { color: var(--text-tertiary); }
+  .cell-add-icon {
+    display: inline-block;
+    color: var(--text-tertiary);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .tt-cell.empty:hover .cell-add-icon { color: var(--accent); }
+
+  .subject-cell-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: inherit;
+    text-align: center;
+    color: var(--text-primary);
+    border-bottom: 1.5px solid var(--accent);
+    padding: 1px 0;
+  }
+
+  .today-badge {
+    display: inline-block;
+    font-size: 9px;
+    padding: 1px 5px;
+    background: var(--blue);
+    color: #fff;
+    border-radius: 3px;
+    font-weight: 800;
+    margin-left: 3px;
+    vertical-align: middle;
+  }
+
+  /* 구분선 + 라벨 */
+  .divider-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0 10px;
+    border-top: 1px solid var(--line);
+    margin-top: 4px;
+  }
+  .divider-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text-tertiary);
+  }
+  .divider-sub {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--text-tertiary);
+    margin-left: 4px;
+  }
+
+  /* 간편 생성 버튼 */
+  .quick-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 800;
+    font-family: var(--font);
+    color: var(--accent);
+    background: var(--accent-light);
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .quick-btn:hover { opacity: 0.85; }
+
+  /* 교시 시간 설정 테이블 */
+  .time-wrap {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: 4px;
+  }
+  .time-head {
+    display: grid;
+    grid-template-columns: 52px 1fr 1fr 1fr;
+    background: var(--bg-gray);
+    border-bottom: 1px solid var(--line);
+  }
+  .time-row {
+    display: grid;
+    grid-template-columns: 52px 1fr 1fr 1fr;
+    border-bottom: 1px solid var(--line);
+    align-items: center;
+  }
+  .time-row:last-child { border-bottom: none; }
+  .time-row:nth-child(even) { background: #fafafa; }
+
+  .th {
+    padding: 7px 8px;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text-tertiary);
+    text-align: center;
+    font-family: var(--font);
+    border-right: 1px solid var(--line);
+  }
+  .th:last-child { border-right: none; }
+
+  .td-period {
+    padding: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--accent);
+    text-align: center;
+    border-right: 1px solid var(--line);
+  }
+  .td-time {
+    padding: 6px 8px;
+    border-right: 1px solid var(--line);
+  }
+  .time-input {
+    width: 100%;
+    height: 28px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--bg-gray);
+    font-size: 12px;
+    font-family: var(--font);
+    color: var(--text-primary);
+    text-align: center;
+    padding: 0 4px;
+    outline: none;
+  }
+  .time-input:focus { border-color: var(--accent); }
+
+  .td-alarm {
+    padding: 6px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 토글 */
+  .toggle {
+    width: 34px;
+    height: 20px;
+    border-radius: 10px;
+    background: var(--accent);
+    position: relative;
+    cursor: pointer;
+    flex-shrink: 0;
+    border: none;
+    transition: background 0.15s;
+  }
+  .toggle.off { background: var(--line); }
+  .toggle::after {
+    content: '';
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    position: absolute;
+    top: 2px; right: 2px;
+    transition: right 0.15s;
+  }
+  .toggle.off::after { right: auto; left: 2px; }
+
+  /* 알람 종류 */
+  .alarm-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .alarm-row:last-child { border-bottom: none; }
+  .alarm-row.no-divider { border-bottom: none; }
+  .alarm-name { font-size: 13px; color: var(--text-primary); font-weight: 700; }
+  .alarm-sub { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+
+  /* 교시 알람 상세 설정 (알람음 / n분전 n회) */
+  .alarm-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 12px;
+    margin: -4px 0 10px;
+    background: var(--bg-gray);
+    border-radius: var(--radius-md);
+  }
+  .alarm-detail.disabled { opacity: 0.5; pointer-events: none; }
+  .sound-preview-btn {
+    width: 30px; height: 30px; flex-shrink: 0;
+    border: 1px solid var(--line); border-radius: var(--radius-sm);
+    background: var(--white); color: var(--accent);
+    font-size: 11px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sound-preview-btn:hover { background: var(--accent-light); }
+  .sound-preview-btn:disabled { color: var(--text-tertiary); cursor: not-allowed; background: var(--bg-gray); }
+
+  /* 알람 볼륨 (공통 슬라이더) */
+  .volume-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0 6px;
+  }
+  .volume-icon { font-size: 13px; color: var(--text-tertiary); flex-shrink: 0; }
+  .volume-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--line);
+    outline: none;
+    cursor: pointer;
+  }
+  .volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: none;
+  }
+  .volume-slider::-moz-range-thumb {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: none;
+  }
+  .volume-value {
+    font-size: 12px; font-weight: 800; color: var(--accent);
+    width: 36px; text-align: right; flex-shrink: 0;
+  }
+  .alarm-detail-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; row-gap: 8px; }
+  .alarm-detail-label {
+    font-size: 11px; color: var(--text-secondary); font-weight: 700;
+    width: 56px; flex-shrink: 0;
+  }
+
+  /* 전체 교시 시간 설정 레이어의 시간 입력 행 */
+  .time-wrap-edit { max-height: 260px; overflow-y: auto; margin-bottom: 0; transition: max-height .15s ease; }
+  .time-wrap-edit.compact { max-height: 140px; }
+  .time-wrap-edit .time-row { grid-template-columns: 56px 1fr 16px 1fr; }
+  #allPeriodTimeList { max-height: 260px; overflow-y: auto; }
+  #allPeriodTimeList.compact { max-height: 140px; }
+  .time-sep { text-align: center; color: var(--text-tertiary); font-size: 11px; }
+  .popup-sub {
+    font-size: 11px; color: var(--text-tertiary); text-align: center;
+    margin: -10px 0 14px;
+  }
+  .popup-section-label {
+    font-size: 11px; font-weight: 800; color: var(--text-tertiary);
+    padding-bottom: 8px; margin-bottom: 4px;
+    border-bottom: 1px solid var(--line);
+  }
+  .popup-section-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .quick-settings-panel {
+    background: var(--bg-gray);
+    border-radius: var(--radius-md);
+    padding: 0 12px;
+    margin-bottom: 0;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height .22s ease, opacity .18s ease, padding .22s ease, margin-bottom .22s ease;
+  }
+  .quick-settings-panel.open {
+    padding: 12px;
+    margin-bottom: 14px;
+    max-height: 400px;
+    opacity: 1;
+  }
+  .quick-settings-panel .popup-row:last-of-type { margin-bottom: 12px; }
+
+  /* 일정 추가 레이어 */
+  .sched-field { margin-bottom: 16px; }
+  .sched-field:last-child { margin-bottom: 0; }
+  .sched-label {
+    display: block;
+    font-size: 12px; font-weight: 800; color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+  .sched-label .req { color: var(--accent); }
+  .sched-input {
+    width: 100%;
+    height: 40px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--white);
+    padding: 0 12px;
+    font-size: 13px;
+    font-family: var(--font);
+    color: var(--text-primary);
+    outline: none;
+  }
+  .sched-input:focus { border-color: var(--accent); }
+  .sched-input::placeholder { color: var(--text-tertiary); }
+  select.sched-input { cursor: pointer; }
+  textarea.sched-input {
+    height: 76px;
+    padding: 10px 12px;
+    resize: none;
+    line-height: 1.4;
+    font-family: var(--font);
+  }
+  .sched-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .sched-color-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .sched-color-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
+  }
+  .sched-color-dot.selected::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    text-shadow: 0 0 2px rgba(0,0,0,0.45);
+  }
+
+  /* 푸터 */
+  .layer-footer {
+    padding: 14px 24px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    background: var(--white);
+  }
+  .btn {
+    padding: 8px 22px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 800;
+    font-family: var(--font);
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.15s;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn-cancel {
+    background: var(--bg-gray);
+    color: var(--text-secondary);
+    border: 1px solid var(--line);
+  }
+  .btn-save {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  /* 탭 콘텐츠 */
+  .tab-content { display: none; }
+  .tab-content.on { display: block; }
+
+  /* 학사일정 */
+  .month-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .month-title { font-size: 14px; font-weight: 800; color: var(--text-primary); }
+  .month-btn {
+    width: 28px; height: 28px; border: 1px solid var(--line);
+    border-radius: var(--radius-sm); background: var(--bg-gray);
+    font-size: 13px; cursor: pointer; color: var(--text-secondary);
+    font-family: var(--font); display: flex; align-items: center; justify-content: center;
+  }
+  .month-btn:hover { background: var(--line); }
+
+  .cal-wrap { border: 1px solid var(--line); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 14px; }
+  .cal-head {
+    display: grid; grid-template-columns: repeat(7,1fr);
+    background: var(--bg-gray); border-bottom: 1px solid var(--line);
+  }
+  .cal-dow {
+    padding: 7px 4px; font-size: 11px; font-weight: 800;
+    color: var(--text-tertiary); text-align: center;
+  }
+  .cal-dow.sun { color: #E24B4A; }
+  .cal-dow.sat { color: var(--accent); }
+  .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); }
+  .cal-cell {
+    height: 32px; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: var(--text-primary); position: relative; cursor: pointer;
+    border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  }
+  .cal-cell:nth-child(7n) { border-right: none; }
+  .cal-cell:hover { background: var(--bg-gray); }
+  .cal-cell.today-c { background: var(--accent); color: #fff; font-weight: 800; border-radius: 0; }
+  .cal-cell.has-event::after {
+    content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+    width: 4px; height: 4px; border-radius: 50%; background: var(--accent);
+  }
+  .cal-cell.today-c.has-event::after { background: #fff; }
+  .cal-cell.other { color: var(--text-tertiary); }
+
+  .event-list { display: flex; flex-direction: column; gap: 6px; }
+  .schedule-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 32px 0;
+    color: var(--text-tertiary);
+  }
+  .schedule-empty-icon { font-size: 22px; opacity: 0.7; }
+  .schedule-empty-text { font-size: 12.5px; font-weight: 700; }
+  .event-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px; border-radius: var(--radius-md);
+    border: 1px solid var(--line);
+  }
+  .event-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .event-name { font-size: 12px; color: var(--text-primary); flex: 1; font-weight: 700; }
+  .event-date { font-size: 11px; color: var(--text-tertiary); }
+  .event-src {
+    font-size: 9px; padding: 2px 6px; border-radius: var(--radius-sm); font-weight: 800;
+  }
+  .src-neis { background: var(--blue-light); color: var(--blue); }
+  .src-personal { background: #FAEEDA; color: #633806; }
+
+  /* 한줄 안내 */
+  .notice-hint-bar {
+    font-size: 11px; color: var(--text-tertiary);
+    padding: 7px 12px; background: var(--bg-gray);
+    border-radius: var(--radius-md); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .notice-card {
+    border: 1px solid var(--line); border-radius: var(--radius-md);
+    margin-bottom: 8px; overflow: hidden;
+  }
+  .notice-card-head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px; background: var(--bg-gray);
+    border-bottom: 1px solid var(--line);
+  }
+  .notice-period { font-size: 11px; font-weight: 800; color: var(--text-secondary); flex: 1; }
+  .badge-auto-switch {
+    font-size: 9px; padding: 2px 6px; border-radius: var(--radius-sm);
+    background: var(--accent-light); color: var(--accent); font-weight: 800;
+  }
+  .notice-del { font-size: 14px; color: var(--text-tertiary); cursor: pointer; background: none; border: none; }
+  .notice-del:hover { color: #E24B4A; }
+  .notice-card-body { padding: 10px 12px; }
+  .notice-text { font-size: 13px; color: var(--text-primary); margin-bottom: 4px; font-weight: 700; }
+  .notice-sub { font-size: 11px; color: var(--text-tertiary); }
+  .add-row {
+    display: flex; align-items: center; gap: 6px;
+    padding: 10px 12px; border: 1px dashed var(--line);
+    border-radius: var(--radius-md); color: var(--text-tertiary);
+    font-size: 12px; cursor: pointer; font-family: var(--font);
+    background: none; width: 100%; font-weight: 700;
+  }
+  .add-row:hover { background: var(--bg-gray); }
+
+  /* 설정 탭 표시 항목 */
+  .display-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .display-row:last-child { border-bottom: none; }
+  .display-left { display: flex; flex-direction: column; gap: 3px; }
+  .display-name { font-size: 13px; font-weight: 800; color: var(--text-primary); }
+  .display-sub  { font-size: 11px; color: var(--text-tertiary); }
+
+  /* 카테고리 그룹 */
+  .display-group {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .display-group-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--bg-gray);
+    border-bottom: 1px solid var(--line);
+  }
+  .display-group-title {
+    font-size: 12px; font-weight: 800; color: var(--text-secondary);
+  }
+  .badge-required {
+    font-size: 9px; padding: 2px 7px; border-radius: 99px;
+    background: #fff0eb; color: var(--accent); font-weight: 800;
+    border: 1px solid #ffd0bc;
+  }
+  .ds-toast {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.96);
+    background: #1a1a1a; color: #fff;
+    font-size: 12px; font-weight: 700; font-family: var(--font);
+    padding: 9px 18px; border-radius: 99px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .2s, transform .2s;
+    z-index: 9999;
+    max-width: 88%;
+    text-align: center;
+    white-space: normal;
+  }
+  .ds-toast.show {
+    opacity: 1; transform: translate(-50%, -50%) scale(1);
+  }
+
+  /* 긴급 안내 */
+  .urgent-box {
+    border: 1.5px solid var(--accent);
+    border-radius: var(--radius-md);
+    margin-bottom: 16px; overflow: hidden;
+  }
+  .urgent-head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px; background: var(--accent);
+  }
+  .urgent-title { font-size: 12px; font-weight: 800; color: #fff; flex: 1; }
+  .urgent-badge {
+    font-size: 9px; padding: 2px 6px; border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.25); color: #fff; font-weight: 800;
+  }
+  .urgent-body { padding: 10px 12px; background: var(--accent-light); }
+  .urgent-input {
+    width: 100%; border: 1px solid var(--line); border-radius: var(--radius-md);
+    background: #fff; padding: 8px 10px; font-size: 13px;
+    font-family: var(--font); color: var(--text-primary); resize: none;
+    outline: none; line-height: 1.5;
+  }
+  .urgent-input:focus { border-color: var(--accent); }
+  .urgent-hint { font-size: 10px; color: var(--accent); margin-top: 5px; }
+
+  /* 과목별 안내 카드 */
+  .subject-card {
+    border: 1px solid var(--line); border-radius: var(--radius-md);
+    margin-bottom: 6px; overflow: hidden;
+  }
+  .subject-head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 12px; background: var(--bg-gray);
+    border-bottom: 1px solid var(--line); cursor: pointer;
+  }
+  .subject-name { font-size: 12px; font-weight: 800; color: var(--text-primary); flex: 1; }
+  .subject-days { font-size: 10px; color: var(--text-tertiary); }
+  .subject-toggle-icon { font-size: 11px; color: var(--text-tertiary); }
+  .subject-body { padding: 10px 12px; display: none; }
+  .subject-body.open { display: block; }
+  .subject-textarea {
+    width: 100%; border: 1px solid var(--line); border-radius: var(--radius-md);
+    background: var(--bg-gray); padding: 7px 10px; font-size: 12px;
+    font-family: var(--font); color: var(--text-primary); resize: none;
+    outline: none; line-height: 1.5; margin-bottom: 6px;
+  }
+  .subject-textarea:focus { border-color: var(--accent); background: #fff; }
+  .subject-sub-input {
+    width: 100%; border: 1px solid var(--line); border-radius: var(--radius-md);
+    background: var(--bg-gray); padding: 6px 10px; font-size: 11px;
+    font-family: var(--font); color: var(--text-secondary); outline: none;
+  }
+  .subject-sub-input:focus { border-color: var(--accent); background: #fff; }
+  .subject-sub-label { font-size: 10px; color: var(--text-tertiary); margin-bottom: 4px; }
+
+  /* 간편 생성 팝업 */
+  .popup-wrap {
+    display: flex; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    align-items: center; justify-content: center; z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .18s ease;
+  }
+  .popup-wrap.on {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .popup {
+    background: var(--white); border-radius: var(--radius-lg);
+    border: 1px solid var(--line); padding: 24px; width: 340px;
+    max-height: 85vh;
+    overflow-y: auto;
+    transform: scale(0.96) translateY(8px);
+    transition: transform .18s ease;
+  }
+  .popup-wrap.on .popup {
+    transform: scale(1) translateY(0);
+  }
+  .popup-title {
+    font-size: 15px; font-weight: 800; color: var(--text-primary);
+    text-align: center; margin-bottom: 18px;
+  }
+  .popup-row {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+  }
+  .popup-label { font-size: 12px; color: var(--text-secondary); width: 72px; flex-shrink: 0; font-weight: 700; }
+  .popup-select {
+    height: 34px; border: 1px solid var(--line);
+    border-radius: var(--radius-md); background: var(--bg-gray);
+    font-size: 12px; font-family: var(--font); color: var(--text-primary);
+    padding: 0 8px; cursor: pointer; outline: none;
+  }
+  .popup-select:focus { border-color: var(--accent); }
+  .popup-input {
+    height: 34px; border: 1px solid var(--line);
+    border-radius: var(--radius-md); background: var(--bg-gray);
+    font-size: 12px; font-family: var(--font); color: var(--text-primary);
+    padding: 0 8px; width: 64px; text-align: center; outline: none;
+  }
+  .popup-input:focus { border-color: var(--accent); }
+  .popup-select:disabled, .popup-input:disabled {
+    background: var(--bg-gray); color: var(--text-tertiary); cursor: not-allowed;
+  }
+  .popup-unit { font-size: 12px; color: var(--text-tertiary); }
+  .popup-footer { display: flex; gap: 8px; margin-top: 18px; }
+
+  /* 한줄 안내 탭 */
+  .notice-config-area { transition: opacity .15s; }
+  .notice-config-area.disabled { opacity: 0.5; pointer-events: none; }
+
+  .notice-onoff-note {
+    font-size: 11.5px;
+    color: var(--text-tertiary);
+    margin-bottom: 18px;
+  }
+  .notice-onoff-link {
+    border: none;
+    background: none;
+    padding: 0;
+    font-size: 11.5px;
+    font-weight: 800;
+    color: var(--accent);
+    text-decoration: underline;
+    cursor: pointer;
+    font-family: var(--font);
+  }
+
+  /* 자동/직접입력 — 둘 다 항상 보이되, 선택된 쪽만 강조되는 블록 */
+  .notice-mode-select {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .notice-mode-block {
+    border: 2px solid var(--line);
+    background: var(--bg-gray);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, opacity .15s;
+  }
+  .notice-mode-block.active {
+    border-color: var(--accent);
+    background: #fff8f5;
+  }
+  .notice-mode-block.inactive { opacity: 0.55; }
+  .notice-mode-block-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .notice-mode-radio {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--line);
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .notice-mode-block.active .notice-mode-radio { border-color: var(--accent); }
+  .notice-mode-radio-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity .1s;
+  }
+  .notice-mode-block.active .notice-mode-radio-dot { opacity: 1; }
+  .notice-mode-block-title {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: var(--text-secondary);
+  }
+  .notice-mode-block.active .notice-mode-block-title { color: var(--accent); }
+  .notice-mode-active-badge {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 2px 8px;
+    border-radius: 999px;
+    display: none;
+  }
+  .notice-mode-block.active .notice-mode-active-badge { display: inline-block; }
+
+  .notice-field-row { margin-bottom: 14px; }
+  .notice-field-row:last-child { margin-bottom: 0; }
+  .notice-field-label-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  .notice-field-label { font-size: 12.5px; font-weight: 700; color: var(--text-secondary); }
+  .notice-field-range { font-size: 10.5px; color: var(--text-tertiary); }
+  .notice-input-wrap { position: relative; }
+  .notice-input {
+    width: 100%;
+    height: 36px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--white);
+    font-size: 12.5px;
+    font-family: var(--font);
+    color: var(--text-primary);
+    padding: 0 48px 0 10px;
+    outline: none;
+  }
+  .notice-input:focus { border-color: var(--accent); }
+  .notice-char-count {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10.5px;
+    color: var(--text-tertiary);
+  }
+  .popup-btn {
+    flex: 1; padding: 9px 0; border-radius: var(--radius-md);
+    font-size: 13px; font-weight: 800; font-family: var(--font);
+    cursor: pointer; border: none; text-align: center;
+  }
+  .popup-cancel { background: var(--bg-gray); color: var(--text-secondary); border: 1px solid var(--line); }
+  .popup-confirm { background: var(--accent); color: #fff; }
+  .popup-confirm:hover { opacity: 0.9; }
 </style>
 </head>
 <body>
-<button id="fakeLoginBtn" style="position:fixed; top:8px; right:8px; z-index:99998; background:#185FA5; color:#fff; border:none; border-radius:8px; padding:8px 14px; font-size:12px; font-weight:800; font-family:'NanumSquareRound',sans-serif; cursor:pointer;" onclick="location.href='login-sim.html'">🔁 A/B 테스트 페이지로 이동</button>
-<div class="app" id="app">
 
-  <!-- GNB -->
-  <div class="gnb">
-    <span class="gnb-logo">🧰 Tool Kit</span>
-    <div style="display:flex; gap:6px; align-items:center;">
-      <button class="gnb-chip" id="tabClassroom" onclick="switchGnbTab('classroom')">수업도구</button>
-      <button class="gnb-chip active" id="tabDashboard" onclick="switchGnbTab('dashboard')">대시보드</button>
-      <button class="gnb-base-settings" id="gnbBaseSettings" onclick="openBaseSettings()" title="기본 틀 설정">⚙️</button>
-    </div>
-    <div class="gnb-right">
-      <span class="res-indicator" id="resIndicator">— × —</span>
-      <span>*****님</span><span>|</span><span>로그아웃</span>
-    </div>
-  </div>
+<div class="overlay">
+  <div class="layer">
 
-  <!-- 모드 슬라이드 트랙: 좌=수업도구(빈화면) / 우=대시보드 -->
-  <div class="mode-track-outer">
-  <div class="mode-track show-dashboard" id="modeTrack">
+    <!-- 헤더 -->
+    <div class="layer-header">
+      <div class="title-row">
+        <span class="layer-title">대시보드 설정</span>
+        <button class="close-btn" aria-label="닫기">✕</button>
+      </div>
 
-    <!-- 수업도구 모드: 빈 화면 -->
-    <div class="mode-panel mode-classroom">
-      <div class="mode-empty">
-        <span class="mode-empty-icon">🧰</span>
-        <p class="mode-empty-text">수업도구 화면</p>
+      <div class="dev-test-bar">
+        <span class="dev-test-label">상태 테스트</span>
+        <button class="dev-test-btn" onclick="applyTestState('empty')">학교정보 입력 X (시간표 ＋표시)</button>
+        <button class="dev-test-btn" onclick="applyTestState('filled')">학교정보 입력 O (과목 채워진 상태)</button>
+      </div>
+
+      <div class="school-row" id="schoolRow">
+
+        <!-- 요약 상태: 학기초 1회 설정 후엔 한 줄로 축약 -->
+        <div class="school-summary" id="schoolSummaryView">
+          <span class="school-summary-icon">🏫</span>
+          <span class="school-summary-text" id="schoolSummaryText">학교 정보를 설정해주세요</span>
+          <button class="school-summary-btn" id="schoolSummaryBtn" onclick="expandSchoolRow(event)">설정하기</button>
+        </div>
+
+        <!-- 펼침 상태: 학교/학년/반 선택 -->
+        <div class="school-fields-view" id="schoolFieldsView" style="display:none;">
+          <div class="school-fields-header">
+            <span class="school-summary-icon">🏫</span>
+            <span class="school-fields-label">학교 정보 설정</span>
+          </div>
+          <div class="school-fields-divider"></div>
+
+          <div class="school-fields-grid">
+            <div class="field" id="schoolField">
+              <div class="field-label">
+                학교 <span class="badge-neis">NEIS 연동</span>
+              </div>
+
+              <div class="school-input-row">
+                <div class="school-input-wrap">
+                  <input
+                    type="text"
+                    id="schoolSearchInput"
+                    class="school-text-input"
+                    placeholder="학교명을 입력하세요 (예: 대명초)"
+                    oninput="handleSchoolInput(this.value)"
+                    onfocus="openSchoolPanel(event)"
+                    onkeydown="handleSchoolKeydown(event)"
+                    onclick="event.stopPropagation()"
+                  >
+                  <button class="school-clear-btn" id="schoolClearBtn" onclick="clearSchoolInput(event)" aria-label="입력 지우기">✕</button>
+                </div>
+                <button class="btn-school-search" onclick="searchSchool(event)">검색</button>
+              </div>
+
+              <div class="dropdown-panel" id="schoolPanel">
+                <div class="neis-search-hint" id="schoolSearchHint">같은 이름의 학교가 여러 지역에 있을 수 있어요. 주소를 확인하고 선택하세요.</div>
+                <div class="neis-result-list" id="schoolResultList"></div>
+              </div>
+            </div>
+
+            <div class="field" id="gradeField">
+              <div class="field-label">학년</div>
+              <div class="field-input disabled" id="gradeInput" onclick="toggleGradePanel(event)">
+                <span id="gradeInputText">-</span>
+                <span class="arrow">∨</span>
+              </div>
+
+              <div class="dropdown-panel" id="gradePanel">
+                <div class="simple-select-list" id="gradeResultList"></div>
+              </div>
+            </div>
+
+            <div class="field" id="classField">
+              <div class="field-label">반</div>
+              <div class="field-input disabled" id="classInput" onclick="toggleClassPanel(event)">
+                <span id="classInputText">-</span>
+                <span class="arrow">∨</span>
+              </div>
+
+              <div class="dropdown-panel" id="classPanel">
+                <div class="simple-select-list" id="classResultList"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="school-fields-footer">
+            <button class="school-cancel-btn" onclick="collapseSchoolRow(event)">취소</button>
+            <button class="school-confirm-btn" onclick="confirmSchoolFields(event)">확인</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="tab-row">
+        <button class="tab on" onclick="switchTab('timetable', this)">시간표</button>
+        <button class="tab" onclick="switchTab('schedule', this)">학사일정</button>
+        <button class="tab" onclick="switchTab('notice', this)">한줄안내</button>
+        <button class="tab" id="tabBtn-display" onclick="switchTab('display', this)">설정</button>
       </div>
     </div>
 
-    <!-- 대시보드 모드 -->
-    <div class="mode-panel mode-dashboard">
-      <!-- 바디 -->
-      <div class="body" id="body">
+    <!-- 본문 -->
+    <div class="layer-body">
 
-    <!-- 기본 틀 래퍼 -->
-    <div class="base-wrap" id="baseWrap">
+      <!-- ── 시간표 탭 ── -->
+      <div class="tab-content on" id="tab-timetable">
 
-      <!-- 기본 틀 그리드 -->
-      <div class="base-area" id="baseArea" style="grid-template-columns:1fr; grid-template-rows:auto auto 1fr;">
-
-        <!-- 날짜/시간 8 + 날씨 2 -->
-        <div style="display:flex; gap:10px; height:120px;">
-          <div class="base-cell cell-datetime" id="cellDatetime" style="flex:8; flex-direction:row; justify-content:center; gap:24px; overflow:hidden;">
-            <span id="dateVal" style="font-size:56px; font-weight:800; color:#1a1a1a; white-space:nowrap;"></span>
-            <span id="timeVal" style="font-size:56px; font-weight:800; color:#1a1a1a; white-space:nowrap;"></span>
+        <div class="section-row">
+          <div class="section-label">
+            주간 시간표
           </div>
-          <div class="base-cell cell-weather" id="weatherCell" style="flex:2; overflow:hidden;">
-            <span style="font-size:56px; line-height:1;" id="weatherIcon">⛅</span>
-            <div id="weatherText" style="display:flex; flex-direction:column; align-items:center; gap:2px;">
-              <span style="font-size:32px; font-weight:800; color:#1a1a1a; line-height:1.2;">27°C</span>
-              <span style="font-size:18px; color:#aaa;">맑음</span>
+          <div class="section-actions">
+            <button class="btn-neis-load is-disabled" id="btnNeisLoad" onclick="loadNeisTimetable(event)">
+              <span class="icon">⟳</span>NEIS 시간표 불러오기
+              <span class="btn-tooltip">학교, 학년, 반 정보를 입력하면 NEIS 시간표를 불러올 수 있어요.</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="section-actions" style="margin-bottom:10px;">
+          <button class="quick-btn" onclick="addPeriod()">＋ 교시 추가</button>
+          <button class="quick-btn" style="color:var(--text-secondary);background:var(--bg-gray);" onclick="removePeriod()">－ 교시 삭제</button>
+          <button class="quick-btn" id="btnAlarmSettings" style="color:var(--text-secondary);background:var(--bg-gray);" onclick="openAlarmSettingsPopup()">🔔 교시 알람 · <span id="alarmOnCountLabel">시작·종료</span></button>
+        </div>
+
+        <!-- 주간 시간표 그리드 -->
+        <div class="tt-wrap">
+          <div class="tt-grid tt-head">
+            <div class="tt-cell">교시</div>
+            <div class="tt-cell">월</div>
+            <div class="tt-cell">화</div>
+            <div class="tt-cell today">수 <span class="today-badge">오늘</span></div>
+            <div class="tt-cell">목</div>
+            <div class="tt-cell">금</div>
+          </div>
+          <div id="ttGridBody"><!-- 교시 행은 renderTimetableBody()에 의해 렌더링됩니다 --></div>
+        </div>
+
+      </div>
+
+      <!-- ── 학사일정 탭 ── -->
+      <div class="tab-content" id="tab-schedule">
+
+        <div class="section-row">
+          <div class="section-label">학사일정</div>
+          <div class="section-actions">
+            <button class="btn-neis-load is-disabled" id="btnNeisScheduleLoad" onclick="loadNeisSchoolCalendar(event)">
+              <span class="icon">⟳</span>NEIS 학사일정 불러오기
+            </button>
+            <button style="display:inline-flex;align-items:center;gap:5px;padding:7px 14px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-md);font-size:13px;font-weight:800;font-family:var(--font);cursor:pointer;" onclick="openScheduleAddPopup()">＋ 일정 추가</button>
+          </div>
+        </div>
+
+        <div class="info-bar" id="schedInfoBar">
+          ℹ 학교 정보를 설정하면 NEIS에서 학사일정을 자동으로 불러올 수 있어요. 설정하지 않아도 ＋ 일정 추가로 직접 등록하며 사용할 수 있습니다.
+        </div>
+
+        <div class="month-nav">
+          <button class="month-btn">‹</button>
+          <span class="month-title">2026년 6월</span>
+          <button class="month-btn">›</button>
+        </div>
+
+        <div class="cal-wrap">
+          <div class="cal-head">
+            <div class="cal-dow sun">일</div>
+            <div class="cal-dow">월</div>
+            <div class="cal-dow">화</div>
+            <div class="cal-dow">수</div>
+            <div class="cal-dow">목</div>
+            <div class="cal-dow">금</div>
+            <div class="cal-dow sat">토</div>
+          </div>
+          <div class="cal-grid" id="scheduleCalGrid">
+            <div class="cal-cell other" data-day="1">1</div><div class="cal-cell other" data-day="2">2</div><div class="cal-cell other" data-day="3">3</div><div class="cal-cell other" data-day="4">4</div><div class="cal-cell other" data-day="5">5</div><div class="cal-cell other" data-day="6">6</div><div class="cal-cell other" data-day="7">7</div>
+            <div class="cal-cell other" data-day="8">8</div><div class="cal-cell other" data-day="9">9</div><div class="cal-cell other" data-day="10">10</div><div class="cal-cell other" data-day="11">11</div><div class="cal-cell other" data-day="12">12</div><div class="cal-cell other" data-day="13">13</div><div class="cal-cell other" data-day="14">14</div>
+            <div class="cal-cell other" data-day="15">15</div><div class="cal-cell other" data-day="16">16</div><div class="cal-cell other" data-day="17">17</div><div class="cal-cell other" data-day="18">18</div><div class="cal-cell other" data-day="19">19</div><div class="cal-cell today-c" data-day="20">20</div><div class="cal-cell other" data-day="21">21</div>
+            <div class="cal-cell other" data-day="22">22</div><div class="cal-cell other" data-day="23">23</div><div class="cal-cell other" data-day="24">24</div><div class="cal-cell other" data-day="25">25</div><div class="cal-cell other" data-day="26">26</div><div class="cal-cell other" data-day="27">27</div><div class="cal-cell other" data-day="28">28</div>
+            <div class="cal-cell other" data-day="29">29</div><div class="cal-cell other" data-day="30">30</div>
+          </div>
+        </div>
+
+        <div class="event-list" id="scheduleEventList"><!-- renderEventList()로 렌더링 --></div>
+
+      </div>
+
+      <!-- ── 한줄안내 탭 ── -->
+      <div class="tab-content" id="tab-notice">
+
+        <div class="section-row" style="margin-bottom:4px;">
+          <div class="section-label">한줄 안내</div>
+        </div>
+        <div class="display-sub" style="margin: 0 0 4px;">대시보드 하단에 안내 문구를 표시합니다.</div>
+        <div class="notice-onoff-note">
+          표시 여부는 <button class="notice-onoff-link" onclick="goToDisplayTab(event)">설정 탭</button>에서 다른 화면 항목과 함께 켜고 끌 수 있어요.
+        </div>
+
+        <div class="notice-config-area" id="noticeConfigArea">
+
+          <div class="notice-mode-select">
+            <div class="notice-mode-block" id="noticeModeCardAuto" onclick="setNoticeMode('auto')">
+              <div class="notice-mode-block-head">
+                <span class="notice-mode-radio"><span class="notice-mode-radio-dot"></span></span>
+                <span class="notice-mode-block-title">자동 (시간표 연동)</span>
+                <span class="notice-mode-active-badge">사용 중</span>
+              </div>
+              <div id="noticeAutoPanel"><!-- renderNoticeAutoPanel()로 렌더링 --></div>
             </div>
+
+            <div class="notice-mode-block" id="noticeModeCardManual" onclick="setNoticeMode('manual')">
+              <div class="notice-mode-block-head">
+                <span class="notice-mode-radio"><span class="notice-mode-radio-dot"></span></span>
+                <span class="notice-mode-block-title">직접 입력</span>
+                <span class="notice-mode-active-badge">사용 중</span>
+              </div>
+              <div class="notice-input-wrap">
+                <input type="text" class="notice-input" maxlength="30" id="noticeOverrideInput" placeholder="계속 표시할 문구를 입력하세요" oninput="onNoticeOverrideInput()" onclick="event.stopPropagation()">
+                <span class="notice-char-count" id="noticeCharCount-override">0/30</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── 설정 탭 ── -->
+      <div class="tab-content" id="tab-display">
+
+        <div class="section-row" style="margin-bottom:10px;">
+          <div class="section-label">기본 틀 표시 항목</div>
+        </div>
+
+        <!-- 학급 일정 그룹 -->
+        <div class="display-group">
+          <div class="display-group-head">
+            <span class="display-group-title">학급 일정</span>
+            <span class="badge-required">최소 1개 필수</span>
+          </div>
+          <div class="display-row">
+            <div class="display-left">
+              <div class="display-name">시간표</div>
+              <div class="display-sub">주간 시간표 및 현재 교시 표시</div>
+            </div>
+            <button class="toggle" id="tog-timetable" onclick="groupToggle(this)" aria-label="표시 토글"></button>
+          </div>
+          <div class="display-row">
+            <div class="display-left">
+              <div class="display-name">학사일정</div>
+              <div class="display-sub">학사 달력 및 일정 목록 표시</div>
+            </div>
+            <button class="toggle" id="tog-cal" onclick="groupToggle(this)" aria-label="표시 토글"></button>
+          </div>
+          <div class="display-row" style="border-bottom:none;">
+            <div class="display-left">
+              <div class="display-name">급식</div>
+              <div class="display-sub">오늘의 급식 메뉴 표시 (학사일정 영역 하단)</div>
+              <div class="display-api-warn" id="meal-api-warn" style="display:none;">
+                학교 급식 정보를 불러올 수 없어 비활성됩니다.
+              </div>
+            </div>
+            <button class="toggle off" id="tog-meal" onclick="mealToggle(this)" aria-label="표시 토글"></button>
           </div>
         </div>
 
         <!-- 한줄 안내 -->
-        <div class="base-cell cell-notice" id="noticeCell" style="height:80px; font-size:44px; white-space:nowrap; overflow:hidden;">
-          <span id="noticeText">오늘 3교시 체육 준비물: 체육복, 운동화</span>
+        <div class="display-group">
+          <div class="display-group-head">
+            <span class="display-group-title">한줄 안내</span>
+          </div>
+          <div class="display-row" style="border-bottom:none;">
+            <div class="display-left">
+              <div class="display-name">한줄 안내사항</div>
+              <div class="display-sub">대시보드 하단에 안내 문구 표시</div>
+            </div>
+            <button class="toggle" id="tog-notice" onclick="toggleNoticeDisplay(this)" aria-label="표시 토글"></button>
+          </div>
         </div>
 
-        <!-- 시간표 + 학사일정: 1280 이상 좌우, 1280 미만 상하 -->
-        <div id="schedRow" style="display:flex; gap:10px; flex:1; min-height:0; overflow:hidden;">
-
-          <!-- 시간표 -->
-          <div class="base-cell cell-timetable" style="flex:1; padding:0; overflow:hidden; align-items:flex-start; flex-direction:column; border-radius:10px;">
-            <div class="tt-title" style="width:100%; flex-shrink:0;">3학년 1반 주간 시간표</div>
-            <div style="flex:1; overflow-y:auto; width:100%; padding:0 16px 16px;">
-            <table class="tt-table">
-              <thead>
-                <tr>
-                  <th>시간</th>
-                  <th>월</th><th>화</th><th>수</th><th>목</th>
-                  <th class="col-today">금</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="td-time">1교시<br>09:00~09:40</td>
-                  <td class="td-sub">국어</td><td class="td-sub">수학</td><td class="td-sub">사회</td><td class="td-sub">국어</td>
-                  <td class="td-sub col-today-cell">영어</td>
-                </tr>
-                <tr>
-                  <td class="td-time">2교시<br>09:50~10:30</td>
-                  <td class="td-sub">수학</td><td class="td-sub">국어</td><td class="td-sub">수학</td><td class="td-sub">과학</td>
-                  <td class="td-sub col-today-cell">국어</td>
-                </tr>
-                <tr class="current-row">
-                  <td class="td-time">3교시<br>10:40~11:20</td>
-                  <td class="td-sub">사회</td><td class="td-sub">과학</td><td class="td-sub">국어</td><td class="td-sub">수학</td>
-                  <td class="td-sub col-today-cell">수학</td>
-                </tr>
-                <tr>
-                  <td class="td-time">4교시<br>11:30~12:10</td>
-                  <td class="td-sub active">체육</td><td class="td-sub">미술</td><td class="td-sub active">영어</td><td class="td-sub active">체육</td>
-                  <td class="td-sub col-today-cell">미술</td>
-                </tr>
-                <tr class="lunch-row">
-                  <td colspan="6">점심시간</td>
-                </tr>
-                <tr>
-                  <td class="td-time">5교시<br>13:00~13:40</td>
-                  <td class="td-sub">음악</td><td class="td-sub">도덕</td><td class="td-sub">과학</td><td class="td-sub">음악</td>
-                  <td class="td-sub col-today-cell">사회</td>
-                </tr>
-                <tr>
-                  <td class="td-time">6교시<br>13:50~14:30</td>
-                  <td></td><td></td><td></td><td class="td-sub">도덕</td>
-                  <td class="td-sub col-today-cell"></td>
-                </tr>
-              </tbody>
-            </table>
-            </div>
+        <!-- API 상태 시뮬레이션 (검토용) -->
+        <div id="sim-panel" style="display:none; margin-bottom:12px; padding:10px 12px; background:var(--bg-gray); border-radius:var(--radius-md); border:1px dashed var(--line);">
+          <div style="font-size:11px; color:var(--text-tertiary); margin-bottom:8px; font-weight:800;">🔧 검토용 — 급식 API 상태 시뮬레이션</div>
+          <div style="display:flex; gap:8px;">
+            <button onclick="simulateMealApi(true)" style="flex:1; padding:6px 0; font-size:12px; font-weight:800; font-family:var(--font); border-radius:var(--radius-md); border:1px solid var(--line); background:#fff; color:var(--text-secondary); cursor:pointer;">API 연동 정상</button>
+            <button onclick="simulateMealApi(false)" style="flex:1; padding:6px 0; font-size:12px; font-weight:800; font-family:var(--font); border-radius:var(--radius-md); border:1px solid var(--line); background:#fff; color:#A32D2D; cursor:pointer;">API 연동 실패</button>
           </div>
-
-          <!-- 학사일정 + 급식 래퍼 -->
-          <div style="flex:1; display:flex; flex-direction:column; gap:10px; min-height:0; min-width:0;">
-          <!-- 학사일정 (달력) -->
-          <div class="base-cell cell-schedule" style="flex:1; padding:0; overflow:hidden; align-items:flex-start; flex-direction:column; border-radius:10px; min-height:0;">
-            <div class="cal-title" style="width:100%; flex-shrink:0;">아이스크림초등학교 학사일정</div>
-            <div style="flex:1; overflow-y:auto; width:100%; padding:0 16px 16px;">
-            <div class="cal-wrap" style="padding:4px 0;">
-              <div class="cal-grid">
-                <div class="cal-head sun">일</div><div class="cal-head">월</div><div class="cal-head">화</div>
-                <div class="cal-head">수</div><div class="cal-head">목</div><div class="cal-head">금</div>
-                <div class="cal-head sat">토</div>
-                <!-- 6월 2026 -->
-                <div class="cal-day empty"></div>
-                <div class="cal-day">1</div><div class="cal-day">2</div><div class="cal-day">3</div>
-                <div class="cal-day">4</div><div class="cal-day">5</div><div class="cal-day sat">6</div>
-                <div class="cal-day sun">7</div><div class="cal-day">8</div><div class="cal-day">9</div>
-                <div class="cal-day">10</div><div class="cal-day">11</div><div class="cal-day">12</div><div class="cal-day sat">13</div>
-                <div class="cal-day sun">14</div><div class="cal-day">15</div><div class="cal-day">16</div>
-                <div class="cal-day">17</div><div class="cal-day">18</div><div class="cal-day">19</div><div class="cal-day sat">20</div>
-                <div class="cal-day sun">21</div><div class="cal-day">22</div><div class="cal-day">23</div>
-                <div class="cal-day">24</div><div class="cal-day">25</div>
-                <div style="display:flex;flex-direction:column;align-items:center;">
-                  <div class="cal-day today">26</div>
-                </div>
-                <div class="cal-day sat">27<div class="cal-event">재량휴업</div></div>
-                <div class="cal-day sun">28</div><div class="cal-day">29</div><div class="cal-day">30</div>
-                <div class="cal-day empty"></div><div class="cal-day empty"></div><div class="cal-day empty"></div><div class="cal-day empty"></div>
-              </div>
-              <div style="margin-top:12px; background:#f5f5f5; border-radius:10px; padding:12px 14px;">
-                <div style="font-size:20px; font-weight:800; color:#1a1a1a; margin-bottom:8px;">오늘의 일정</div>
-                <div style="font-size:18px; color:#aaa;">오늘의 일정이 없습니다.</div>
-              </div>
-            </div>
-            <!-- 스크롤 영역 닫기 -->
-            </div>
-          <!-- 학사일정 셀 닫기 -->
-          </div>
-          <!-- 급식: 학사일정 하단, 동일 너비 -->
-          <div style="flex-shrink:0; background:#fff8f3; border:1.5px solid #ffd0bc; border-radius:10px; padding:14px 18px;">
-            <div class="meal-title">🍚 오늘의 급식</div>
-            <div class="meal-content" style="margin-top:6px;">잡곡밥 · 된장국 · 불고기 · 깍두기 · 우유</div>
-          </div>
-          <!-- 래퍼 닫기 -->
-          </div>
-
         </div>
 
       </div>
-
-      <!-- 폴드 해제 버튼 (가로 폴드시) -->
-      <div class="unfold-btn-h" id="unfoldH" onclick="toggleFold()">›</div>
-      <!-- 폴드 해제 버튼 (세로 폴드시) -->
-      <div class="unfold-btn-v" id="unfoldV" onclick="toggleFold()">∨ 위젯</div>
 
     </div>
 
-    <!-- 위젯 영역 -->
-    <div class="widget-wrap" id="widgetWrap" style="width:420px; border-left:1px solid #ccc;">
-      <div class="widget-topbar">
-        <span class="w-btn">+ 위젯 추가</span>
-        <span class="w-btn">위젯 편집</span>
-        <button class="fold-btn" id="foldBtn" onclick="toggleFold()">폴드 &lt;</button>
+    <!-- 푸터 -->
+    <div class="layer-footer">
+      <button class="btn btn-cancel" onclick="document.getElementById('sim-panel').style.display = document.getElementById('sim-panel').style.display === 'none' ? 'block' : 'none'">취소</button>
+      <button class="btn btn-save">저장</button>
+    </div>
+
+    <div class="ds-toast" id="dsToast">최소 1개 항목을 필수로 선택해야합니다.</div>
+
+  </div>
+</div>
+
+<!-- 교시 알람 설정 레이어 -->
+<div class="popup-wrap" id="alarmSettingsPopup">
+  <div class="popup" style="width:460px;">
+    <div class="popup-title" style="text-align:left;margin-bottom:4px;">교시 알람 설정</div>
+    <div class="popup-sub" style="text-align:left;margin:0 0 16px;">모든 교시에 동일하게 적용됩니다</div>
+
+    <div class="alarm-row no-divider">
+      <div>
+        <div class="alarm-name">교시 시작 전 알람</div>
+        <div class="alarm-sub" id="alarmBeforeSummary">교시 시작 5분 전, 1회 울림</div>
       </div>
-      <div class="widget-scroll" id="widgetScroll">
-        <div class="widget-grid" id="widgetGrid" style="grid-template-columns:200px 200px; grid-auto-rows:200px;">
-          <div class="widget-cell"><span class="w-lbl">소 (200×200)</span><span class="w-name">⏱ 타이머</span></div>
-          <div class="widget-cell"><span class="w-lbl">소</span><span class="w-name">🔊 효과음</span></div>
-          <div class="widget-cell" style="grid-column:1/span 2;"><span class="w-lbl">중 (400×200)</span><span class="w-name">🎯 점수판</span></div>
-          <div class="widget-cell" style="grid-column:1/span 2;"><span class="w-lbl">중</span><span class="w-name">📅 디데이</span></div>
-        </div>
-      </div>
-      <div class="paging-row">
-        <span class="paging-arrow">‹</span>
-        <div class="dots"><div class="dot on"></div><div class="dot"></div><div class="dot"></div></div>
-        <span class="paging-arrow">›</span>
-      </div>
-      <div class="toolbar">
-        <div class="tool-icon">⏱</div>
-        <div class="tool-icon">🎯</div>
-        <div class="tool-icon">✏️</div>
-        <div class="tool-icon">🌡</div>
-        <div class="tool-icon">📋</div>
-        <div style="margin-left:auto;"><div class="tool-icon">⚙️</div></div>
+      <button class="toggle off" id="toggleAlarmBefore" onclick="toggleAlarmGroup('before', this)" aria-label="교시 시작 전 알람"></button>
+    </div>
+    <div class="alarm-detail disabled" id="alarmDetail-before">
+      <div class="alarm-detail-row">
+        <span class="alarm-detail-label">알람음</span>
+        <select class="popup-select" id="soundSelect-before" style="width:96px;height:30px;" disabled>
+          <option value="bell">종소리</option>
+          <option value="chime">차임벨</option>
+          <option value="ring">알림종</option>
+          <option value="xylophone">실로폰</option>
+        </select>
+        <button class="sound-preview-btn" id="soundPreview-before" disabled onclick="previewSound('before')" aria-label="알람음 미리듣기">▶</button>
+        <span class="alarm-detail-label" style="width:auto;margin-left:8px;">시작 전</span>
+        <input type="number" class="popup-input" id="alarmBeforeMinutes" value="5" min="1" max="60" style="width:48px;" disabled onchange="updateAlarmBeforeSummary()">
+        <span class="popup-unit">분</span>
+        <span class="alarm-detail-label" style="width:auto;margin-left:6px;">횟수</span>
+        <input type="number" class="popup-input" id="alarmBeforeCount" value="1" min="1" max="5" style="width:44px;" disabled onchange="updateAlarmBeforeSummary()">
+        <span class="popup-unit">회</span>
       </div>
     </div>
 
-  </div>
-  <!-- 대시보드 모드 패널 닫기 -->
-  </div>
-  <!-- 모드 트랙 닫기 -->
-  </div>
-  <!-- 모드 트랙 아우터 닫기 -->
+    <div class="alarm-row no-divider">
+      <div>
+        <div class="alarm-name">교시 시작 알람</div>
+        <div class="alarm-sub">교시가 시작되는 시각에 알려드려요</div>
+      </div>
+      <button class="toggle" id="toggleAlarmStart" onclick="toggleAlarmGroup('start', this)" aria-label="교시 시작 알람"></button>
+    </div>
+    <div class="alarm-detail" id="alarmDetail-start">
+      <div class="alarm-detail-row">
+        <span class="alarm-detail-label">알람음</span>
+        <select class="popup-select" id="soundSelect-start" style="flex:1;height:30px;">
+          <option value="chime" selected>차임벨</option>
+          <option value="bell">종소리</option>
+          <option value="ring">알림종</option>
+          <option value="xylophone">실로폰</option>
+        </select>
+        <button class="sound-preview-btn" id="soundPreview-start" onclick="previewSound('start')" aria-label="알람음 미리듣기">▶</button>
+      </div>
+    </div>
+
+    <div class="alarm-row no-divider">
+      <div>
+        <div class="alarm-name">교시 종료 알람</div>
+        <div class="alarm-sub">교시가 종료되는 시각에 알려드려요</div>
+      </div>
+      <button class="toggle" id="toggleAlarmEnd" onclick="toggleAlarmGroup('end', this)" aria-label="교시 종료 알람"></button>
+    </div>
+    <div class="alarm-detail" id="alarmDetail-end">
+      <div class="alarm-detail-row">
+        <span class="alarm-detail-label">알람음</span>
+        <select class="popup-select" id="soundSelect-end" style="flex:1;height:30px;">
+          <option value="ring" selected>알림종</option>
+          <option value="bell">종소리</option>
+          <option value="chime">차임벨</option>
+          <option value="xylophone">실로폰</option>
+        </select>
+        <button class="sound-preview-btn" id="soundPreview-end" onclick="previewSound('end')" aria-label="알람음 미리듣기">▶</button>
+      </div>
+    </div>
+
+    <!-- 알람 볼륨 (공통) -->
+    <div class="divider-row" style="margin-top:0;">
+      <div>
+        <span class="divider-label">알람 볼륨</span>
+        <span class="divider-sub">모든 알람에 공통 적용됩니다</span>
+      </div>
+    </div>
+    <div class="volume-row">
+      <span class="volume-icon">🔈</span>
+      <input type="range" class="volume-slider" id="alarmVolumeSlider" min="0" max="100" value="70" step="5" oninput="updateVolumeLabel(this.value)">
+      <span class="volume-icon">🔊</span>
+      <span class="volume-value" id="volumeValueLabel">70%</span>
+    </div>
+
+    <div class="popup-footer">
+      <button class="popup-btn popup-confirm" style="flex:none;padding:9px 28px;margin-left:auto;" onclick="closeAlarmSettingsPopup()">닫기</button>
+    </div>
   </div>
 </div>
 
-<div class="bp-notice" id="bpNotice">
-  <div class="bp-title-text" id="bpTitle"></div>
-  <div id="bpDesc"></div>
+<!-- NEIS 불러오기: 기존 데이터 대체 확인 레이어 -->
+<div class="popup-wrap" id="neisReplaceConfirmPopup">
+  <div class="popup" style="width:340px;">
+    <div class="popup-title">NEIS 정보 불러오기</div>
+    <div class="popup-sub" id="neisReplaceConfirmMessage" style="margin:-6px 0 18px;line-height:1.5;"></div>
+    <div class="popup-footer" style="margin-top:0;">
+      <button class="popup-btn popup-cancel" onclick="closeNeisReplaceConfirm()">취소</button>
+      <button class="popup-btn popup-confirm" onclick="confirmNeisReplace()">불러오기</button>
+    </div>
+  </div>
 </div>
 
-<!-- 기본 틀 설정 모달 -->
-<div class="settings-modal-bg" id="settingsModalBg">
-  <iframe class="settings-modal-frame" id="settingsModalFrame" src="" title="기본 틀 설정"></iframe>
+<!-- 일정 추가 레이어 -->
+<div class="popup-wrap" id="scheduleAddPopup">
+  <div class="popup" style="width:420px;">
+    <div class="popup-title" style="text-align:left;margin-bottom:20px;">일정 추가</div>
+
+    <div class="sched-field">
+      <label class="sched-label">제목 <span class="req">*</span></label>
+      <input type="text" class="sched-input" id="schedTitleInput" placeholder="일정 제목">
+    </div>
+
+    <div class="sched-row-2 sched-field">
+      <div>
+        <label class="sched-label">시작일 <span class="req">*</span></label>
+        <input type="date" class="sched-input" id="schedStartInput">
+      </div>
+      <div>
+        <label class="sched-label">종료일 (선택)</label>
+        <input type="date" class="sched-input" id="schedEndInput">
+      </div>
+    </div>
+
+    <div class="sched-field">
+      <label class="sched-label">종류</label>
+      <select class="sched-input" id="schedTypeInput">
+        <option value="general">일반 행사</option>
+        <option value="exam">시험</option>
+        <option value="trip">현장학습</option>
+        <option value="holiday">휴업일</option>
+        <option value="ceremony">학교 행사</option>
+      </select>
+    </div>
+
+    <div class="sched-field">
+      <label class="sched-label">설명 (선택)</label>
+      <textarea class="sched-input" id="schedDescInput" placeholder="상세 내용..."></textarea>
+    </div>
+
+    <div class="sched-field">
+      <label class="sched-label">색상</label>
+      <div class="sched-color-list" id="schedColorList"><!-- renderScheduleColorList()로 렌더링 --></div>
+    </div>
+
+    <div class="popup-footer" style="margin-top:4px;">
+      <button class="popup-btn popup-cancel" onclick="closeScheduleAddPopup()">취소</button>
+      <button class="popup-btn popup-confirm" onclick="saveSchedule()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 교시 시간 설정 레이어 (개별 교시 시간 + 간편 설정 아코디언) -->
+<div class="popup-wrap" id="periodTimePopup">
+  <div class="popup" style="width:420px;">
+    <div class="popup-title">교시 시간 설정</div>
+
+    <div class="popup-section-row">
+      <span class="popup-section-label" style="border-bottom:none; padding-bottom:0; margin-bottom:0;">개별 교시 시간</span>
+      <button class="quick-btn" id="quickSettingsToggleBtn" onclick="toggleQuickSettingsPanel()">간편 설정</button>
+    </div>
+
+    <div class="quick-settings-panel" id="quickSettingsPanel">
+      <div class="popup-row">
+        <span class="popup-label">수업 시작</span>
+        <select class="popup-select" id="quickStartAmPm" style="width:56px;">
+          <option value="AM">오전</option>
+          <option value="PM">오후</option>
+        </select>
+        <select class="popup-select" id="quickStartHour" style="width:50px;">
+          <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+          <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+          <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+          <option value="10">10</option><option value="11">11</option><option value="12">12</option>
+        </select>
+        <span class="popup-unit">시</span>
+        <select class="popup-select" id="quickStartMinute" style="width:64px;">
+          <option value="0">00분</option><option value="10">10분</option><option value="20">20분</option>
+          <option value="30">30분</option><option value="40">40분</option><option value="50">50분</option>
+        </select>
+      </div>
+      <div class="popup-row">
+        <span class="popup-label">교시 수</span>
+        <select class="popup-select" id="quickPeriodCount" style="width:90px;" onchange="onQuickPeriodCountChange()">
+          <option value="1">1교시</option><option value="2">2교시</option><option value="3">3교시</option>
+          <option value="4">4교시</option><option value="5">5교시</option><option value="6">6교시</option>
+          <option value="7">7교시</option><option value="8">8교시</option><option value="9">9교시</option>
+          <option value="10">10교시</option>
+        </select>
+        <span class="popup-unit" style="font-size:10px;">메인 화면 ＋/－ 와 함께 반영돼요</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-label">수업 시간</span>
+        <input class="popup-input" type="number" id="quickClassMinutes" value="40" min="5" max="120">
+        <span class="popup-unit">분</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-label">쉬는 시간</span>
+        <input class="popup-input" type="number" id="quickBreakMinutes" value="10" min="0" max="60">
+        <span class="popup-unit">분</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-label">점심 시간</span>
+        <select class="popup-select" id="quickLunchAfter" style="width:96px;"></select>
+        <input class="popup-input" type="number" id="quickLunchMinutes" value="50" min="10" max="90">
+        <span class="popup-unit">분</span>
+      </div>
+      <div style="display:flex; justify-content:flex-end;">
+        <button class="school-confirm-btn" onclick="applyQuickSettings()">적용</button>
+      </div>
+    </div>
+
+    <div class="time-wrap time-wrap-edit" id="allPeriodTimeList"><!-- renderAllPeriodTimeList()로 렌더링 --></div>
+
+    <div class="popup-footer">
+      <button class="popup-btn popup-cancel" onclick="closePeriodTimeEditor()">취소</button>
+      <button class="popup-btn popup-confirm" onclick="confirmAllPeriodTimes()">저장</button>
+    </div>
+  </div>
 </div>
 
 <script>
-const WIDGET_W = 420;
-let isFolded = false;
-let isHorizontal = true; // 현재 좌우 레이아웃 여부
-let lastBp = '';
-let noticeTimer;
-
-// 시계
-function updateClock() {
-  const now = new Date();
-  const days = ['일','월','화','수','목','금','토'];
-  document.getElementById('dateVal').textContent =
-    `${now.getFullYear()}. ${String(now.getMonth()+1).padStart(2,'0')}. ${String(now.getDate()).padStart(2,'0')} (${days[now.getDay()]})`;
-  document.getElementById('timeVal').textContent =
-    `${String(now.getHours()).padStart(2,'0')} : ${String(now.getMinutes()).padStart(2,'0')}`;
-}
-updateClock();
-setInterval(() => { updateClock(); fitDatetimeFont(); }, 1000);
-
-// 폴드 토글
-function openBaseSettings() {
-  const bg = document.getElementById('settingsModalBg');
-  const frame = document.getElementById('settingsModalFrame');
-  frame.src = '대시보드_세팅.html';
-  bg.classList.add('show');
+function switchTab(id, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('tab-' + id).classList.add('on');
 }
 
-function closeBaseSettings() {
-  const bg = document.getElementById('settingsModalBg');
-  const frame = document.getElementById('settingsModalFrame');
-  bg.classList.remove('show');
-  frame.src = '';
+function toggleSubject(headEl) {
+  const body = headEl.nextElementSibling;
+  const icon = headEl.querySelector('.subject-toggle-icon');
+  const isOpen = body.classList.toggle('open');
+  icon.textContent = isOpen ? '∨' : '›';
 }
 
-window.addEventListener('message', (e) => {
-  if (e.data === 'closeBaseSettings') closeBaseSettings();
+let mealApiAvailable = true;
+
+function simulateMealApi(available) {
+  mealApiAvailable = available;
+  const tog = document.getElementById('tog-meal');
+  const warn = document.getElementById('meal-api-warn');
+  if (!available) {
+    tog.classList.add('off', 'api-disabled');
+    warn.style.display = 'block';
+  } else {
+    tog.classList.remove('api-disabled');
+    warn.style.display = 'none';
+  }
+}
+
+function mealToggle(btn) {
+  if (!mealApiAvailable) return;
+  btn.classList.toggle('off');
+}
+
+let toastTimer = null;
+function showToast(msg) {
+  const t = document.getElementById('dsToast');
+  if (msg) t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+/* ───────── 학교(NEIS) · 학년 · 반 설정 ───────── */
+
+// NEIS 학교 검색 mock 데이터 (실제로는 NEIS 학교기본정보 API 호출로 대체)
+const NEIS_SCHOOL_MOCK = [
+  { name: '대명초등학교', addr: '경기 성남시 중원구' },
+  { name: '대명초등학교', addr: '서울 강동구' },
+  { name: '대명초등학교', addr: '부산 사하구' },
+  { name: '샛별초등학교', addr: '경기 성남시 분당구' },
+  { name: '수내초등학교', addr: '경기 성남시 분당구' },
+  { name: '늘푸른초등학교', addr: '경기 성남시 수정구' },
+  { name: '한솔초등학교', addr: '경기 성남시 분당구' },
+  { name: '서울대명초등학교', addr: '서울 강남구' },
+];
+
+let selectedSchool = null;
+let neisSearchTimer = null;
+
+function openSchoolPanel(e) {
+  e.stopPropagation();
+  closeAllPanels(true); // 학년/반 패널만 닫고 학교 패널은 유지
+  document.getElementById('schoolPanel').classList.add('on');
+  const val = document.getElementById('schoolSearchInput').value.trim();
+  if (!val) {
+    document.getElementById('schoolSearchHint').style.display = 'block';
+    document.getElementById('schoolResultList').innerHTML = '';
+  }
+}
+
+function handleSchoolInput(value) {
+  document.getElementById('schoolClearBtn').style.display = value ? 'flex' : 'none';
+  if (selectedSchool) resetSchoolSelection();
+  filterSchools(value);
+}
+
+function resetSchoolSelection() {
+  selectedSchool = null;
+  selectedGrade = null;
+  selectedClass = null;
+  document.getElementById('gradeInput').classList.add('disabled');
+  document.getElementById('classInput').classList.add('disabled');
+  document.getElementById('gradeInput').classList.remove('filled');
+  document.getElementById('classInput').classList.remove('filled');
+  document.getElementById('gradeInputText').textContent = '-';
+  document.getElementById('classInputText').textContent = '-';
+  updateNeisLoadButtonState();
+}
+
+function handleSchoolKeydown(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    searchSchool(e);
+  }
+}
+
+function clearSchoolInput(e) {
+  e.stopPropagation();
+  const input = document.getElementById('schoolSearchInput');
+  input.value = '';
+  document.getElementById('schoolClearBtn').style.display = 'none';
+  if (selectedSchool) resetSchoolSelection();
+  input.focus();
+  filterSchools('');
+}
+
+function searchSchool(e) {
+  e.stopPropagation();
+  const value = document.getElementById('schoolSearchInput').value;
+  document.getElementById('schoolClearBtn').style.display = value ? 'flex' : 'none';
+  filterSchools(value, true); // 검색 버튼 클릭 시 디바운스 없이 즉시 검색
+}
+
+function filterSchools(query, immediate) {
+  clearTimeout(neisSearchTimer);
+  const q = query.trim();
+  const listEl = document.getElementById('schoolResultList');
+  const hintEl = document.getElementById('schoolSearchHint');
+  document.getElementById('schoolPanel').classList.add('on');
+
+  if (!q) {
+    renderSchoolResults([]);
+    hintEl.style.display = 'block';
+    return;
+  }
+
+  hintEl.style.display = 'none';
+  listEl.innerHTML = '<div class="neis-loading">NEIS에서 학교 정보를 검색하는 중…</div>';
+
+  const runSearch = () => {
+    const results = NEIS_SCHOOL_MOCK.filter(s => s.name.includes(q));
+    renderSchoolResults(results);
+  };
+
+  // 실제 연동 시 NEIS 학교기본정보 API 호출 (입력 중엔 debounce, 검색 버튼 클릭 시 즉시 실행)
+  if (immediate) {
+    runSearch();
+  } else {
+    neisSearchTimer = setTimeout(runSearch, 250);
+  }
+}
+
+function renderSchoolResults(results) {
+  const listEl = document.getElementById('schoolResultList');
+  if (!document.getElementById('schoolSearchInput').value.trim()) {
+    listEl.innerHTML = '';
+    return;
+  }
+  if (results.length === 0) {
+    listEl.innerHTML = '<div class="neis-empty">검색 결과가 없습니다.</div>';
+    return;
+  }
+  listEl.innerHTML = results.map((s, i) =>
+    `<div class="neis-result-item" onclick="selectSchool(${i}, event)">
+      <span class="neis-result-name">${s.name}</span>
+      <span class="neis-result-addr">${s.addr}</span>
+    </div>`
+  ).join('');
+  listEl._results = results;
+}
+
+function selectSchool(index, e) {
+  e.stopPropagation();
+  const results = document.getElementById('schoolResultList')._results;
+  const school = results[index];
+  selectedSchool = school;
+
+  const input = document.getElementById('schoolSearchInput');
+  input.value = `${school.name} (${school.addr})`;
+  document.getElementById('schoolClearBtn').style.display = 'flex';
+
+  // 학교가 바뀌면 학년/반 선택은 초기화하고 다시 선택 가능하도록 활성화
+  document.getElementById('gradeInput').classList.remove('disabled');
+  document.getElementById('classInput').classList.remove('disabled');
+  document.getElementById('gradeInputText').textContent = '학년 선택';
+  document.getElementById('classInputText').textContent = '반 선택';
+  document.getElementById('gradeInput').classList.remove('filled');
+  document.getElementById('classInput').classList.remove('filled');
+  selectedGrade = null;
+  selectedClass = null;
+
+  updateNeisLoadButtonState();
+  closeAllPanels();
+}
+
+function updateNeisLoadButtonState() {
+  const btn = document.getElementById('btnNeisLoad');
+  // NEIS 학급시간표는 특정 학년/반 단위로 조회되므로, 전담(해당없음)인 경우 자동 불러오기는 사용할 수 없음
+  const ready = !!(selectedSchool && selectedGrade && selectedGrade !== 'none' && selectedClass);
+  btn.classList.toggle('is-disabled', !ready);
+
+  const scheduleBtn = document.getElementById('btnNeisScheduleLoad');
+  if (scheduleBtn) scheduleBtn.classList.toggle('is-disabled', !selectedSchool);
+
+  updateSchoolSummary();
+}
+
+/* ───────── 학교 정보 요약(축약)/펼침 토글 ───────── */
+
+function updateSchoolSummary() {
+  const box = document.getElementById('schoolSummaryView');
+  const text = document.getElementById('schoolSummaryText');
+  const btn = document.getElementById('schoolSummaryBtn');
+
+  if (selectedSchool && selectedGrade === 'none') {
+    text.textContent = `${selectedSchool.name} · 전담`;
+    box.classList.add('filled');
+    btn.textContent = '변경';
+  } else if (selectedSchool && selectedGrade && selectedClass) {
+    text.textContent = `${selectedSchool.name} · ${selectedGrade}학년 ${selectedClass}반`;
+    box.classList.add('filled');
+    btn.textContent = '변경';
+  } else if (selectedSchool) {
+    text.textContent = `${selectedSchool.name} · 학년/반을 선택해주세요`;
+    box.classList.add('filled');
+    btn.textContent = '변경';
+  } else {
+    text.textContent = '학교 정보를 설정해주세요';
+    box.classList.remove('filled');
+    btn.textContent = '설정하기';
+  }
+}
+
+function expandSchoolRow(e) {
+  if (e) e.stopPropagation();
+  document.getElementById('schoolSummaryView').style.display = 'none';
+  document.getElementById('schoolFieldsView').style.display = 'block';
+}
+
+function collapseSchoolRow(e) {
+  if (e) e.stopPropagation();
+  closeAllPanels();
+  document.getElementById('schoolFieldsView').style.display = 'none';
+  document.getElementById('schoolSummaryView').style.display = 'flex';
+  updateSchoolSummary();
+}
+
+function confirmSchoolFields(e) {
+  if (e) e.stopPropagation();
+  const complete = selectedSchool && (selectedGrade === 'none' || (selectedGrade && selectedClass));
+  if (!complete) {
+    showToast('학교를 선택하고, 학년/반을 선택하거나 전담이신 경우 "해당없음(전담)"을 선택해주세요.');
+    return;
+  }
+  collapseSchoolRow();
+}
+
+/* ───────── 상태 테스트용 (QA 확인용) ───────── */
+
+function applyTestState(mode) {
+  if (mode === 'empty') {
+    resetSchoolSelection();
+    const input = document.getElementById('schoolSearchInput');
+    input.value = '';
+    document.getElementById('schoolClearBtn').style.display = 'none';
+    collapseSchoolRow();
+
+    Object.keys(subjectsData).forEach(key => {
+      subjectsData[key] = ['—', '—', '—', '—', '—'];
+    });
+    renderTimetableBody();
+
+    scheduleEvents = [];
+    renderCalendarAndEvents();
+
+    showToast('학교 정보 미입력 상태로 전환했습니다.');
+    return;
+  }
+
+  if (mode === 'filled') {
+    selectedSchool = { name: '대명초등학교', addr: '경기 성남시 중원구' };
+    selectedGrade = 3;
+    selectedClass = 1;
+
+    const input = document.getElementById('schoolSearchInput');
+    input.value = `${selectedSchool.name} (${selectedSchool.addr})`;
+    document.getElementById('schoolClearBtn').style.display = 'flex';
+
+    const gradeInput = document.getElementById('gradeInput');
+    const classInput = document.getElementById('classInput');
+    gradeInput.classList.remove('disabled');
+    classInput.classList.remove('disabled');
+    gradeInput.classList.add('filled');
+    classInput.classList.add('filled');
+    document.getElementById('gradeInputText').textContent = '3학년';
+    document.getElementById('classInputText').textContent = '1반';
+
+    updateNeisLoadButtonState();
+    collapseSchoolRow();
+
+    periods.filter(p => p.type === 'period').forEach(p => {
+      subjectsData[p.key] = DEMO_FILLED_SUBJECTS[p.key]
+        ? [...DEMO_FILLED_SUBJECTS[p.key]]
+        : ['—', '—', '—', '—', '—'];
+    });
+    renderTimetableBody();
+
+    scheduleEvents = [...DEMO_NEIS_EVENTS, DEMO_PERSONAL_EVENT];
+    renderCalendarAndEvents();
+
+    showToast('학교 정보 입력 상태로 전환했습니다.');
+  }
+}
+
+let selectedGrade = null;
+let selectedClass = null;
+
+function toggleGradePanel(e) {
+  e.stopPropagation();
+  if (document.getElementById('gradeInput').classList.contains('disabled')) return;
+  const wasOn = document.getElementById('gradePanel').classList.contains('on');
+  closeAllPanels();
+  if (wasOn) return;
+  renderGradeList();
+  document.getElementById('gradePanel').classList.add('on');
+  document.getElementById('gradeInput').classList.add('open');
+}
+
+function renderGradeList() {
+  const listEl = document.getElementById('gradeResultList');
+  const gradeItems = [1, 2, 3, 4, 5, 6].map(g =>
+    `<div class="simple-select-item ${selectedGrade === g ? 'selected' : ''}" onclick="selectGrade(${g}, event)">${g}학년</div>`
+  ).join('');
+  const noneItem = `<div class="simple-select-item simple-select-item-none ${selectedGrade === 'none' ? 'selected' : ''}" onclick="selectGrade('none', event)">해당없음 (전담)</div>`;
+  listEl.innerHTML = gradeItems + noneItem;
+}
+
+function selectGrade(g, e) {
+  e.stopPropagation();
+  selectedGrade = g;
+  const gradeInput = document.getElementById('gradeInput');
+  const classInput = document.getElementById('classInput');
+
+  if (g === 'none') {
+    // 전담 교사: 특정 학년/반이 없으므로 반 선택도 함께 "해당없음" 처리
+    document.getElementById('gradeInputText').textContent = '해당없음 (전담)';
+    gradeInput.classList.add('filled');
+    selectedClass = 'none';
+    document.getElementById('classInputText').textContent = '전담';
+    classInput.classList.add('filled');
+    classInput.classList.add('disabled');
+  } else {
+    document.getElementById('gradeInputText').textContent = `${g}학년`;
+    gradeInput.classList.add('filled');
+    // 전담 상태에서 일반 학년으로 다시 바꾸는 경우, 반 선택을 다시 활성화
+    if (selectedClass === 'none') {
+      selectedClass = null;
+      document.getElementById('classInputText').textContent = '반 선택';
+      classInput.classList.remove('filled');
+    }
+    classInput.classList.remove('disabled');
+  }
+
+  updateNeisLoadButtonState();
+  closeAllPanels();
+}
+
+function toggleClassPanel(e) {
+  e.stopPropagation();
+  if (document.getElementById('classInput').classList.contains('disabled')) return;
+  const wasOn = document.getElementById('classPanel').classList.contains('on');
+  closeAllPanels();
+  if (wasOn) return;
+  renderClassList();
+  document.getElementById('classPanel').classList.add('on');
+  document.getElementById('classInput').classList.add('open');
+}
+
+function renderClassList() {
+  const listEl = document.getElementById('classResultList');
+  const classCount = 12; // 실제로는 선택된 학교/학년의 NEIS 학급 정보로 대체
+  listEl.innerHTML = Array.from({length: classCount}, (_, i) => i + 1).map(c =>
+    `<div class="simple-select-item ${selectedClass === c ? 'selected' : ''}" onclick="selectClass(${c}, event)">${c}반</div>`
+  ).join('');
+}
+
+function selectClass(c, e) {
+  e.stopPropagation();
+  selectedClass = c;
+  const classInput = document.getElementById('classInput');
+  document.getElementById('classInputText').textContent = `${c}반`;
+  classInput.classList.add('filled');
+  updateNeisLoadButtonState();
+  closeAllPanels();
+}
+
+function loadNeisTimetable(e) {
+  e.stopPropagation();
+  if (selectedGrade === 'none') {
+    showToast('전담 선생님은 NEIS 시간표 자동 불러오기를 지원하지 않아요. 셀을 클릭해 직접 입력해주세요.');
+    return;
+  }
+  if (!selectedSchool || !selectedGrade || !selectedClass) {
+    showToast('학교 정보(학교, 학년, 반)을 입력하면 NEIS에서 시간표를 자동으로 불러옵니다.');
+    return;
+  }
+  const label = `${selectedSchool.name} ${selectedGrade}학년 ${selectedClass}반`;
+  openNeisReplaceConfirm(
+    `${label} 시간표를 NEIS에서 불러옵니다.<br>현재 화면의 시간표는 새로 불러온 정보로 대체됩니다.`,
+    () => {
+      // 실제 연동 시 NEIS 시간표 API 호출 후 tt-grid 갱신
+      showToast(`${label} 시간표를 불러왔습니다.`);
+    }
+  );
+}
+
+function loadNeisSchoolCalendar(e) {
+  e.stopPropagation();
+  if (!selectedSchool) {
+    showToast('학교 정보(학교)를 입력하면 NEIS에서 학사일정을 자동으로 불러옵니다.');
+    return;
+  }
+  openNeisReplaceConfirm(
+    `${selectedSchool.name}의 학사일정을 NEIS에서 불러옵니다.<br>현재 등록된 학사일정은 새로 불러온 정보로 대체됩니다.`,
+    () => {
+      // 개인 일정은 유지하고, NEIS 출처 일정만 새로 받아온 데모 데이터로 교체
+      scheduleEvents = scheduleEvents.filter(ev => ev.source !== 'neis').concat(DEMO_NEIS_EVENTS);
+      renderCalendarAndEvents();
+      showToast(`${selectedSchool.name} 학사일정을 불러왔습니다.`);
+    }
+  );
+}
+
+/* ───────── NEIS 불러오기: 기존 데이터 대체 확인 레이어 ───────── */
+
+let pendingNeisAction = null;
+
+function openNeisReplaceConfirm(messageHtml, onConfirm) {
+  document.getElementById('neisReplaceConfirmMessage').innerHTML = messageHtml;
+  pendingNeisAction = onConfirm;
+  document.getElementById('neisReplaceConfirmPopup').classList.add('on');
+}
+
+function closeNeisReplaceConfirm() {
+  document.getElementById('neisReplaceConfirmPopup').classList.remove('on');
+  pendingNeisAction = null;
+}
+
+function confirmNeisReplace() {
+  const action = pendingNeisAction;
+  closeNeisReplaceConfirm();
+  if (action) action();
+}
+
+/* ───────── 일정 추가 레이어 ───────── */
+
+const SCHEDULE_COLORS = ['#ff4600', '#4dabf7', '#51cf66', '#ffa94d', '#cc5de8', '#66d9e8', '#ff8787', '#8ce99a', '#f783ac', '#bcaaa4', '#ffe066', '#adb5bd'];
+let selectedScheduleColor = SCHEDULE_COLORS[0];
+
+function renderScheduleColorList() {
+  document.getElementById('schedColorList').innerHTML = SCHEDULE_COLORS.map(c =>
+    `<div class="sched-color-dot${c === selectedScheduleColor ? ' selected' : ''}" style="background:${c};" onclick="selectScheduleColor('${c}', this)" aria-label="일정 색상 선택"></div>`
+  ).join('');
+}
+
+function selectScheduleColor(color, el) {
+  selectedScheduleColor = color;
+  document.querySelectorAll('.sched-color-dot').forEach(d => d.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function getTodayDateString() {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function openScheduleAddPopup() {
+  document.getElementById('schedTitleInput').value = '';
+  document.getElementById('schedStartInput').value = getTodayDateString();
+  document.getElementById('schedEndInput').value = '';
+  document.getElementById('schedTypeInput').value = 'general';
+  document.getElementById('schedDescInput').value = '';
+  selectedScheduleColor = SCHEDULE_COLORS[0];
+  renderScheduleColorList();
+  document.getElementById('scheduleAddPopup').classList.add('on');
+}
+
+function closeScheduleAddPopup() {
+  document.getElementById('scheduleAddPopup').classList.remove('on');
+}
+
+function saveSchedule() {
+  const title = document.getElementById('schedTitleInput').value.trim();
+  const start = document.getElementById('schedStartInput').value;
+  const end = document.getElementById('schedEndInput').value;
+
+  if (!title) { showToast('제목을 입력해주세요.'); return; }
+  if (!start) { showToast('시작일을 선택해주세요.'); return; }
+  if (end && end < start) { showToast('종료일은 시작일보다 빠를 수 없습니다.'); return; }
+
+  // 지금 달력이 2026년 6월 고정이라, 해당 월 날짜일 때만 달력/리스트에 반영 (월 이동은 이 프로토타입에서 미지원)
+  if (start.startsWith(CURRENT_CAL_MONTH)) {
+    const day = parseInt(start.split('-')[2], 10);
+    scheduleEvents.push({
+      id: `personal-${Date.now()}`,
+      day,
+      title,
+      color: selectedScheduleColor,
+      source: 'personal',
+    });
+    renderCalendarAndEvents();
+  }
+
+  closeScheduleAddPopup();
+  showToast(`'${title}' 일정이 추가되었습니다.`);
+}
+
+/* ───────── 학사일정: 데이터 및 렌더링 ───────── */
+
+const CURRENT_CAL_MONTH = '2026-06'; // 달력이 고정으로 보여주는 월 (월 이동 미지원)
+
+const DEMO_NEIS_EVENTS = [
+  { id: 'neis-1', day: 19, title: '현장학습', color: '#ff4600', source: 'neis' },
+  { id: 'neis-2', day: 24, title: '학부모 상담 주간', color: '#ff6b2b', source: 'neis' },
+];
+
+const DEMO_PERSONAL_EVENT = { id: 'personal-demo', day: 11, title: '학예회 준비 회의', color: '#ff4600', source: 'personal' };
+
+// 학교 정보와 무관하게 개인 일정은 등록할 수 있으므로, 기본값은 완전히 빈 상태로 시작합니다
+let scheduleEvents = [];
+
+function renderEventList() {
+  const container = document.getElementById('scheduleEventList');
+  if (scheduleEvents.length === 0) {
+    container.innerHTML = `
+      <div class="schedule-empty-state">
+        <div class="schedule-empty-icon">🗓</div>
+        <div class="schedule-empty-text">등록된 학사일정이 없습니다.</div>
+      </div>`;
+    return;
+  }
+
+  const sorted = [...scheduleEvents].sort((a, b) => a.day - b.day);
+  container.innerHTML = sorted.map(ev => `
+    <div class="event-item">
+      <div class="event-dot" style="background:${ev.color};"></div>
+      <span class="event-name">${ev.title}</span>
+      <span class="event-date">6월 ${ev.day}일</span>
+      <span class="event-src ${ev.source === 'neis' ? 'src-neis' : 'src-personal'}">${ev.source === 'neis' ? 'NEIS' : '개인'}</span>
+    </div>
+  `).join('');
+}
+
+function renderCalendarDots() {
+  const eventDays = new Set(scheduleEvents.map(e => e.day));
+  document.querySelectorAll('#scheduleCalGrid .cal-cell[data-day]').forEach(cell => {
+    const day = parseInt(cell.dataset.day, 10);
+    cell.classList.toggle('has-event', eventDays.has(day));
+  });
+}
+
+function renderCalendarAndEvents() {
+  renderEventList();
+  renderCalendarDots();
+}
+
+/* ───────── 주간 시간표: 교시/과목 데이터 및 렌더링 ───────── */
+
+const WEEKDAYS = ['월', '화', '수', '목', '금'];
+const TODAY_INDEX = 2; // 수요일
+const NOW_PERIOD_KEY = '3'; // 데모용: 현재 진행중인 교시
+
+let periods = [
+  { key: '1', type: 'period', num: 1, start: '09:00', end: '09:40' },
+  { key: '2', type: 'period', num: 2, start: '09:50', end: '10:30' },
+  { key: '3', type: 'period', num: 3, start: '10:40', end: '11:20' },
+  { key: '4', type: 'period', num: 4, start: '11:30', end: '12:10' },
+  { key: 'lunch', type: 'lunch', start: '12:10', end: '13:00' },
+  { key: '5', type: 'period', num: 5, start: '13:00', end: '13:40' },
+  { key: '6', type: 'period', num: 6, start: '13:50', end: '14:30' },
+];
+
+const DEMO_FILLED_SUBJECTS = {
+  '1': ['영어', '실과', '자율·자치', '자율·자치', '실과'],
+  '2': ['음악', '실과', '자율·자치', '음악', '실과'],
+  '3': ['국어', '사회', '체육', '과학', '영어'],
+  '4': ['국어', '체육', '도덕', '과학', '영어'],
+  '5': ['사회', '국어', '영어', '사회', '음악'],
+  '6': ['수학', '수학', '—', '수학', '수학'],
+};
+
+// 학교 정보가 없는 상태가 기본값이므로, 실제 서비스에서는 과목이 채워지지 않은 빈 시간표로 시작합니다
+const subjectsData = {};
+periods.filter(p => p.type === 'period').forEach(p => {
+  subjectsData[p.key] = ['—', '—', '—', '—', '—'];
 });
 
-function switchGnbTab(tab) {
-  const classroomTab = document.getElementById('tabClassroom');
-  const dashboardTab = document.getElementById('tabDashboard');
-  const gear = document.getElementById('gnbBaseSettings');
-  const track = document.getElementById('modeTrack');
-  if (tab === 'dashboard') {
-    classroomTab.classList.remove('active');
-    dashboardTab.classList.add('active');
-    gear.style.display = 'flex';
-    track.classList.remove('show-classroom');
-    track.classList.add('show-dashboard');
-  } else {
-    dashboardTab.classList.remove('active');
-    classroomTab.classList.add('active');
-    gear.style.display = 'none';
-    track.classList.remove('show-dashboard');
-    track.classList.add('show-classroom');
-  }
-  // 슬라이드 애니메이션 종료 후 레이아웃 재계산
-  setTimeout(() => {
-    applyLayout();
-    fitNoticeFont();
-    fitDatetimeFont();
-    fitWeatherFont();
-  }, 360);
+function renderTimetableBody() {
+  document.getElementById('ttGridBody').innerHTML = periods.map(renderPeriodRow).join('');
 }
 
-function toggleFold() {
-  isFolded = !isFolded;
-  applyFold();
-}
+function renderPeriodRow(p) {
+  const isLunch = p.type === 'lunch';
+  const label = isLunch ? '점심' : `${p.num}교시`;
+  const isNow = !isLunch && p.key === NOW_PERIOD_KEY;
+  const periodCellClass = `tt-cell period${isNow ? ' now-row' : ''}`;
+  const periodNumStyle = isLunch ? ' style="font-weight:700;font-size:10px;"' : '';
 
-function applyFold() {
-  const widgetWrap = document.getElementById('widgetWrap');
-  const foldBtn = document.getElementById('foldBtn');
-  const unfoldH = document.getElementById('unfoldH');
-  const unfoldV = document.getElementById('unfoldV');
-
-  if (isFolded) {
-    if (isHorizontal) {
-      widgetWrap.classList.add('folded-h');
-      unfoldH.style.display = 'flex';
-      unfoldV.style.display = 'none';
-      foldBtn.textContent = '펼치기 ›';
-    } else {
-      widgetWrap.classList.add('folded-v');
-      unfoldV.style.display = 'flex';
-      unfoldH.style.display = 'none';
-      foldBtn.textContent = '펼치기 ∧';
+  const dayCells = WEEKDAYS.map((d, i) => {
+    const isToday = i === TODAY_INDEX;
+    if (isLunch) {
+      const bg = isToday ? '#fff5f0' : '#fafafa';
+      return `<div class="tt-cell${isToday ? ' today-col' : ''}" style="color:var(--text-tertiary);font-size:11px;background:${bg};">${p.start} ~ ${p.end}</div>`;
     }
-  } else {
-    widgetWrap.classList.remove('folded-h', 'folded-v');
-    unfoldH.style.display = 'none';
-    unfoldV.style.display = 'none';
-    foldBtn.textContent = isHorizontal ? '폴드 <' : '폴드 ∨';
-  }
+    const subj = (subjectsData[p.key] && subjectsData[p.key][i]) || '—';
+    const isEmpty = subj === '—';
+    const isNowCell = isNow && isToday;
+    const cellContent = isEmpty ? '<span class="cell-add-icon">＋</span>' : subj;
+    return `<div class="tt-cell${isToday ? ' today-col' : ''}${isNowCell ? ' now-cell' : ''} editable${isEmpty ? ' empty' : ''}" onclick="editSubjectCell(event, '${p.key}', ${i})">${cellContent}</div>`;
+  }).join('');
+
+  return `
+    <div class="tt-grid">
+      <div class="${periodCellClass}" onclick="openPeriodTimeEditor('${p.key}', event)">
+        <span class="period-num"${periodNumStyle}>${label}</span>
+        <span class="period-time" id="periodTimeLabel-${p.key}">${p.start}~${p.end}</span>
+      </div>
+      ${dayCells}
+    </div>`;
 }
 
-// 반응형
-function applyLayout() {
-  const bodyEl = document.getElementById('body');
-  const w = bodyEl ? bodyEl.clientWidth : window.innerWidth;
-  const h = window.innerHeight;
-  const body = document.getElementById('body');
-  const baseArea = document.getElementById('baseArea');
-  const widgetWrap = document.getElementById('widgetWrap');
-  const widgetGrid = document.getElementById('widgetGrid');
-  const foldBtn = document.getElementById('foldBtn');
-
-  document.getElementById('resIndicator').textContent = `${w} × ${h}`;
-
-  let bp = '';
-  let title = '';
-  let desc = '';
-
-  if (w >= 1280) {
-    bp = 'wide';
-    isHorizontal = true;
-    body.style.flexDirection = 'row';
-    baseArea.style.gridTemplateColumns = '1fr';
-    baseArea.style.gridTemplateRows = 'auto auto 1fr';
-    widgetWrap.style.width = WIDGET_W + 'px';
-    widgetWrap.style.height = 'auto';
-    widgetWrap.style.maxHeight = 'none';
-    widgetWrap.style.borderLeft = isFolded ? 'none' : '1px solid #ccc';
-    widgetWrap.style.borderTop = 'none';
-    widgetWrap.style.flexShrink = '0';
-    widgetGrid.style.gridTemplateColumns = '200px 200px';
-    widgetGrid.style.gridAutoRows = '200px';
-    foldBtn.textContent = isFolded ? '펼치기 ›' : '폴드 <';
-    // 1280 이상: 시간표+학사일정 좌우 배치
-    document.getElementById('schedRow').style.flexDirection = 'row';
-    // 날씨: 1280 이상 좌우 배치
-    document.getElementById('weatherCell').style.flexDirection = 'row';
-    document.getElementById('weatherCell').style.gap = '16px';
-    document.getElementById('weatherText').style.alignItems = 'flex-start';
-    title = w >= 1920 ? '① PC 1920×1080 — 기준 레이아웃' : '② PC 1280×720';
-    desc = '기본 틀 (좌) + 위젯 420px 고정 (우) · 폴드 시 기본 틀 100% 확장';
-  } else {
-    // 1280 미만: body는 row 유지, 좌측=기본틀(시간표/학사일정 상하), 우측=위젯 고정
-    bp = w >= 768 ? 'medium' : 'narrow';
-    isHorizontal = true;
-    body.style.flexDirection = 'row';
-    baseArea.style.gridTemplateColumns = '1fr';
-    baseArea.style.gridTemplateRows = 'auto auto 1fr';
-    widgetWrap.style.width = WIDGET_W + 'px';
-    widgetWrap.style.height = 'auto';
-    widgetWrap.style.maxHeight = 'none';
-    widgetWrap.style.borderLeft = isFolded ? 'none' : '1px solid #ccc';
-    widgetWrap.style.borderTop = 'none';
-    widgetWrap.style.flexShrink = '0';
-    widgetGrid.style.gridTemplateColumns = '200px 200px';
-    widgetGrid.style.gridAutoRows = '200px';
-    foldBtn.textContent = isFolded ? '펼치기 ›' : '폴드 <';
-    // 시간표 위 + 학사일정 아래 (상하 배치)
-    document.getElementById('schedRow').style.flexDirection = 'column';
-    // 날씨: 1280 미만 상하 배치
-    document.getElementById('weatherCell').style.flexDirection = 'column';
-    document.getElementById('weatherCell').style.gap = '4px';
-    document.getElementById('weatherText').style.alignItems = 'center';
-    if (w >= 1024) {
-      title = '④ 패드 가로 (1024~1279px)';
-      desc = '시간표(상)+학사일정(하) 좌측 · 위젯 420px 우측 고정';
-    } else if (w >= 768) {
-      title = '③ 1024px 미만';
-      desc = '시간표(상)+학사일정(하) 좌측 · 위젯 420px 우측 고정';
-    } else {
-      title = '⑤ 768px 미만';
-      desc = '시간표(상)+학사일정(하) 좌측 · 위젯 420px 우측 고정';
-    }
-  }
-
-  applyFold();
-
-  if (bp !== lastBp) {
-    lastBp = bp;
-    showNotice(title, desc);
-  }
+function addMinutesToTime(time, mins) {
+  const [h, m] = time.split(':').map(Number);
+  const total = ((h * 60 + m + mins) % 1440 + 1440) % 1440;
+  const hh = String(Math.floor(total / 60)).padStart(2, '0');
+  const mm = String(total % 60).padStart(2, '0');
+  return `${hh}:${mm}`;
 }
 
-function showNotice(title, desc) {
-  const el = document.getElementById('bpNotice');
-  document.getElementById('bpTitle').textContent = title;
-  document.getElementById('bpDesc').textContent = desc;
-  el.classList.add('show');
-  clearTimeout(noticeTimer);
-  noticeTimer = setTimeout(() => el.classList.remove('show'), 4000);
-}
+function editSubjectCell(e, key, dayIndex) {
+  const cell = e.currentTarget;
+  if (cell.querySelector('input')) return; // 이미 편집 중이면 무시
 
-function fitWeatherFont() {
-  const cell = document.getElementById('weatherCell');
-  const icon = document.getElementById('weatherIcon');
-  const text = document.getElementById('weatherText');
-  if (!cell || !icon || !text) return;
-  const maxSize = 56;
-  const minSize = 16;
-  const cellW = cell.clientWidth;
-  const cellH = cell.clientHeight;
-  const isRow = cell.style.flexDirection === 'row';
-  let size = maxSize;
+  const current = (subjectsData[key] && subjectsData[key][dayIndex]) || '';
+  const initialValue = current === '—' ? '' : current;
 
-  function applySize(s) {
-    icon.style.fontSize = s + 'px';
-    text.querySelectorAll('span').forEach((sp, i) => {
-      sp.style.fontSize = (i === 0 ? Math.max(s * 0.57, 12) : Math.max(s * 0.32, 10)) + 'px';
-    });
-  }
+  cell.innerHTML = `<input class="subject-cell-input" type="text" maxlength="10" value="${initialValue}">`;
+  const input = cell.querySelector('input');
+  input.focus();
+  input.select();
+  input.addEventListener('click', ev => ev.stopPropagation());
 
-  applySize(size);
-
-  if (isRow) {
-    // 가로 배치: 아이콘 + 텍스트가 너비 안에 들어올 때까지
-    while (size > minSize && cell.scrollWidth > cellW + 2) {
-      size -= 1;
-      applySize(size);
-    }
-  } else {
-    // 세로 배치: 셀 너비 기준으로 아이콘 크기 제한
-    // 아이콘이 셀 너비의 60% 이하가 되도록
-    const targetSize = Math.floor(cellW * 0.55);
-    size = Math.min(maxSize, Math.max(minSize, targetSize));
-    applySize(size);
-  }
-}
-
-function fitDatetimeFont() {
-  const cell = document.getElementById('cellDatetime');
-  const dateEl = document.getElementById('dateVal');
-  const timeEl = document.getElementById('timeVal');
-  if (!cell || !dateEl || !timeEl) return;
-  const maxSize = 56;
-  const minSize = 20;
-  let size = maxSize;
-  dateEl.style.fontSize = size + 'px';
-  timeEl.style.fontSize = size + 'px';
-  while ((dateEl.scrollWidth + timeEl.scrollWidth + 24) > cell.clientWidth - 24 && size > minSize) {
-    size -= 1;
-    dateEl.style.fontSize = size + 'px';
-    timeEl.style.fontSize = size + 'px';
-  }
-}
-
-function fitNoticeFont() {
-  const cell = document.getElementById('noticeCell');
-  const text = document.getElementById('noticeText');
-  if (!cell || !text) return;
-  const maxSize = 44;
-  const minSize = 16;
-  let size = maxSize;
-  text.style.fontSize = size + 'px';
-  while (text.scrollWidth > cell.clientWidth - 36 && size > minSize) {
-    size -= 1;
-    text.style.fontSize = size + 'px';
-  }
-}
-
-window.addEventListener('resize', () => { applyLayout(); fitNoticeFont();
-fitDatetimeFont();
-fitWeatherFont(); fitDatetimeFont(); });
-applyLayout();
-fitNoticeFont();
-fitDatetimeFont();
-fitWeatherFont();
-
-// ── 스크롤 버그 재현 확인용 디버그 오버레이 (원본 로직에 영향 없음) ──
-(function () {
-  const navType = sessionStorage.getItem('navType') || 'fresh-entry';
-  sessionStorage.removeItem('navType');
-
-  const box = document.createElement('div');
-  box.id = 'scrollDebugBox';
-  box.style.cssText = `
-    position: fixed; bottom: 8px; left: 8px; right: 8px; z-index: 99999;
-    background: rgba(0,0,0,0.88); color: #0f0; font-size: 10.5px;
-    font-family: monospace; padding: 8px 10px; border-radius: 8px;
-    line-height: 1.55; white-space: pre-wrap; pointer-events: none;
-  `;
-  document.body.appendChild(box);
-
-  const tagMap = {
-    'fresh-entry': '🆕최초진입',
-    'direct-no-scroll': '①스크롤없이이동',
-    'after-scroll': '②스크롤후이동'
+  let committed = false;
+  const commit = () => {
+    if (committed) return;
+    committed = true;
+    const newVal = input.value.trim();
+    if (!subjectsData[key]) subjectsData[key] = ['—', '—', '—', '—', '—'];
+    subjectsData[key][dayIndex] = newVal || '—';
+    renderTimetableBody();
   };
-  const tag = (tagMap[navType] || navType) + ' ';
-  const log = [];
-  function snapshot(label) {
-    const bodyEl = document.getElementById('body');
-    const appEl = document.getElementById('app');
-    const docH = document.documentElement.scrollHeight;
-    const winH = window.innerHeight;
-    const vvH = window.visualViewport ? window.visualViewport.height : null;
-    const bw = bodyEl ? bodyEl.clientWidth : null;
-    const ah = appEl ? appEl.getBoundingClientRect().height : null;
-    const overflowing = docH > winH + 1;
-    log.push({ label: tag + label, bw, ah: ah && ah.toFixed(1), docH, winH, vvH: vvH && vvH.toFixed(1), overflowing });
-    render();
+
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter') { ev.preventDefault(); input.blur(); }
+    if (ev.key === 'Escape') { ev.preventDefault(); committed = true; renderTimetableBody(); }
+  });
+}
+
+function addPeriod() {
+  const periodItems = periods.filter(p => p.type === 'period');
+  const lastNum = periodItems.length ? Math.max(...periodItems.map(p => p.num)) : 0;
+  const newNum = lastNum + 1;
+  const newKey = String(newNum);
+  const last = periods[periods.length - 1];
+  const newStart = addMinutesToTime(last.end, 10);
+  const newEnd = addMinutesToTime(newStart, 40);
+
+  periods.push({ key: newKey, type: 'period', num: newNum, start: newStart, end: newEnd });
+  subjectsData[newKey] = ['—', '—', '—', '—', '—'];
+
+  renderTimetableBody();
+  syncQuickPeriodCountSelect();
+  showToast(`${newNum}교시가 추가되었습니다.`);
+}
+
+function removePeriod() {
+  const periodItems = periods.filter(p => p.type === 'period');
+  if (periodItems.length <= 1) {
+    showToast('최소 1개의 교시는 있어야 합니다.');
+    return;
+  }
+  const last = periodItems[periodItems.length - 1];
+  const idx = periods.findIndex(p => p.key === last.key);
+  periods.splice(idx, 1);
+  delete subjectsData[last.key];
+
+  renderTimetableBody();
+  syncQuickPeriodCountSelect();
+  showToast(`${last.num}교시가 삭제되었습니다.`);
+}
+
+/* 메인 화면 ＋/－ 버튼 조작 시, 레이어의 "교시 수" 드롭다운 값도 함께 동기화 */
+function syncQuickPeriodCountSelect() {
+  const select = document.getElementById('quickPeriodCount');
+  if (!select) return;
+  const count = periods.filter(p => p.type === 'period').length;
+  if ([...select.options].some(o => o.value === String(count))) {
+    select.value = String(count);
+  }
+  populateQuickLunchAfterOptions(count, false);
+}
+
+/* ───────── 교시 시간 설정 레이어: 빠른 설정 ↔ 개별 교시 시간 ───────── */
+
+function minutesToTime(total) {
+  total = ((total % 1440) + 1440) % 1440;
+  const hh = String(Math.floor(total / 60)).padStart(2, '0');
+  const mm = String(total % 60).padStart(2, '0');
+  return `${hh}:${mm}`;
+}
+
+function timeToMinutes(time) {
+  const [h, m] = time.split(':').map(Number);
+  return h * 60 + m;
+}
+
+/* 교시 수가 바뀔 때: 점심 위치 옵션만 새 교시 수에 맞춰 다시 구성 (반영은 [적용]을 눌러야 함) */
+function onQuickPeriodCountChange() {
+  const count = parseInt(document.getElementById('quickPeriodCount').value, 10);
+  populateQuickLunchAfterOptions(count, true);
+}
+
+/* 점심 시간 위치(N교시 후) 옵션을 교시 수에 맞게 재구성. keepSelection=false면 현재 선택값을 최대한 유지 */
+function populateQuickLunchAfterOptions(count, keepSelection) {
+  const select = document.getElementById('quickLunchAfter');
+  const prevValue = select.value;
+  const options = [];
+  for (let n = 1; n <= count; n++) {
+    options.push(`<option value="${n}">${n}교시 후</option>`);
+  }
+  select.innerHTML = options.join('');
+
+  const fallback = String(Math.max(1, Math.min(count, Math.ceil(count / 2))));
+  if (keepSelection === false && prevValue && parseInt(prevValue, 10) <= count) {
+    select.value = prevValue;
+  } else {
+    select.value = fallback;
+  }
+}
+
+/* 레이어를 열 때, 현재 시간표 상태를 빠른 설정 값으로 역산해서 채워둠 (10분 단위로 근사) */
+function initQuickSettingsFromPeriods() {
+  const periodItems = periods.filter(p => p.type === 'period');
+  const first = periodItems[0];
+  const lunch = periods.find(p => p.type === 'lunch');
+
+  const startMin = timeToMinutes(first.start);
+  let hour24 = Math.floor(startMin / 60);
+  const minute = startMin % 60;
+  const ampm = hour24 < 12 ? 'AM' : 'PM';
+  let hour12 = hour24 % 12;
+  if (hour12 === 0) hour12 = 12;
+
+  document.getElementById('quickStartAmPm').value = ampm;
+  document.getElementById('quickStartHour').value = String(hour12);
+  document.getElementById('quickStartMinute').value = String(minute - (minute % 10));
+
+  document.getElementById('quickClassMinutes').value = timeToMinutes(first.end) - timeToMinutes(first.start);
+
+  if (periodItems.length > 1) {
+    document.getElementById('quickBreakMinutes').value = timeToMinutes(periodItems[1].start) - timeToMinutes(periodItems[0].end);
   }
 
-  function render() {
-    box.innerText = log.map(e =>
-      `[${e.label}] bodyW:${e.bw} appH:${e.ah} doc:${e.docH} win:${e.winH} vv:${e.vvH} ${e.overflowing ? '⚠️SCROLL' : '✅'}`
-    ).join('\n');
+  const count = periodItems.length;
+  document.getElementById('quickPeriodCount').value = String(count);
+
+  let lunchAfterNum = Math.ceil(count / 2);
+  if (lunch) {
+    const lunchIdx = periods.findIndex(p => p.type === 'lunch');
+    const before = periods[lunchIdx - 1];
+    if (before && before.type === 'period') lunchAfterNum = before.num;
+    document.getElementById('quickLunchMinutes').value = timeToMinutes(lunch.end) - timeToMinutes(lunch.start);
+  }
+  populateQuickLunchAfterOptions(count, true);
+  document.getElementById('quickLunchAfter').value = String(lunchAfterNum);
+}
+
+/* 빠른 설정 값으로 전체 교시 시간을 재계산하고, 시간표/개별 리스트에 즉시 반영 */
+function recalcPeriodsFromQuickSettings() {
+  const ampm = document.getElementById('quickStartAmPm').value;
+  const hour12 = parseInt(document.getElementById('quickStartHour').value, 10);
+  const minute = parseInt(document.getElementById('quickStartMinute').value, 10);
+  const periodCount = parseInt(document.getElementById('quickPeriodCount').value, 10);
+  const classMin = parseInt(document.getElementById('quickClassMinutes').value, 10) || 40;
+  const breakMin = parseInt(document.getElementById('quickBreakMinutes').value, 10) || 0;
+  const lunchAfter = parseInt(document.getElementById('quickLunchAfter').value, 10);
+  const lunchMin = parseInt(document.getElementById('quickLunchMinutes').value, 10) || 50;
+
+  let hour24 = hour12 % 12;
+  if (ampm === 'PM') hour24 += 12;
+  let cursor = hour24 * 60 + minute;
+
+  const newPeriods = [];
+  const newSubjects = {};
+
+  for (let n = 1; n <= periodCount; n++) {
+    const start = cursor;
+    const end = start + classMin;
+    const key = String(n);
+    newPeriods.push({ key, type: 'period', num: n, start: minutesToTime(start), end: minutesToTime(end) });
+    newSubjects[key] = subjectsData[key] || ['—', '—', '—', '—', '—'];
+    cursor = end;
+
+    if (n === lunchAfter) {
+      const lunchStart = cursor;
+      const lunchEnd = lunchStart + lunchMin;
+      newPeriods.push({ key: 'lunch', type: 'lunch', start: minutesToTime(lunchStart), end: minutesToTime(lunchEnd) });
+      cursor = lunchEnd;
+    } else if (n < periodCount) {
+      cursor += breakMin;
+    }
   }
 
-  // 스크립트 실행 즉시 (applyLayout 최초 호출 직후 시점)
-  snapshot('script-end');
-  // 다음 프레임
-  requestAnimationFrame(() => snapshot('raf'));
-  // load 이벤트 (폰트 등 리소스 로드 완료 시점)
-  window.addEventListener('load', () => snapshot('load'));
-  // 폰트 로드 완료 시점 (지원 브라우저)
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(() => snapshot('fonts-ready'));
+  periods = newPeriods;
+  Object.keys(subjectsData).forEach(k => delete subjectsData[k]);
+  Object.assign(subjectsData, newSubjects);
+
+  renderTimetableBody();
+  renderAllPeriodTimeList();
+}
+
+/* [적용] 버튼을 눌러야 빠른 설정 값이 개별 교시 시간에 반영됨 */
+function applyQuickSettings() {
+  recalcPeriodsFromQuickSettings();
+  document.getElementById('quickSettingsPanel').classList.remove('open');
+  document.getElementById('allPeriodTimeList').classList.remove('compact');
+  showToast('빠른 설정 값이 개별 교시 시간에 적용되었습니다.');
+}
+
+/* [간편 설정] 버튼으로 빠른 설정 패널을 아코디언처럼 열고 닫음. 열려있는 동안엔 아래 리스트를 축소해 전체 높이를 완화함 */
+function toggleQuickSettingsPanel() {
+  const panel = document.getElementById('quickSettingsPanel');
+  const list = document.getElementById('allPeriodTimeList');
+  const isOpen = panel.classList.contains('open');
+  if (isOpen) {
+    panel.classList.remove('open');
+    list.classList.remove('compact');
+  } else {
+    initQuickSettingsFromPeriods();
+    panel.classList.add('open');
+    list.classList.add('compact');
   }
-  // 300ms, 1000ms 후 (레이아웃 안정화 이후)
-  setTimeout(() => snapshot('t+300ms'), 300);
-  setTimeout(() => snapshot('t+1000ms'), 1000);
-  // 리사이즈/회전 시
-  window.addEventListener('resize', () => snapshot('resize'));
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', () => snapshot('vv-resize'));
+}
+
+/* ───────── 개별 교시 시간 리스트 ───────── */
+
+function renderAllPeriodTimeList() {
+  document.getElementById('allPeriodTimeList').innerHTML = periods.map(p => {
+    const label = p.type === 'lunch' ? '점심' : `${p.num}교시`;
+    const labelStyle = p.type === 'lunch' ? ' style="color:var(--text-tertiary);font-size:10px;font-weight:400;"' : '';
+    return `
+      <div class="time-row" data-key="${p.key}">
+        <div class="td-period"${labelStyle}>${label}</div>
+        <div class="td-time"><input type="time" class="time-input" data-role="start" value="${p.start}"></div>
+        <div class="time-sep">~</div>
+        <div class="td-time" style="border-right:none;"><input type="time" class="time-input" data-role="end" value="${p.end}"></div>
+      </div>`;
+  }).join('');
+}
+
+function openPeriodTimeEditor(key, e) {
+  if (e) e.stopPropagation();
+  document.getElementById('quickSettingsPanel').classList.remove('open');
+  document.getElementById('allPeriodTimeList').classList.remove('compact');
+  renderAllPeriodTimeList();
+  document.getElementById('periodTimePopup').classList.add('on');
+  requestAnimationFrame(() => {
+    const target = document.querySelector(`#allPeriodTimeList .time-row[data-key="${key}"]`);
+    if (target) target.scrollIntoView({ block: 'center' });
+  });
+}
+
+function closePeriodTimeEditor() {
+  document.getElementById('periodTimePopup').classList.remove('on');
+}
+
+function confirmAllPeriodTimes() {
+  const rows = document.querySelectorAll('#allPeriodTimeList .time-row');
+  const updates = [];
+  let error = null;
+
+  rows.forEach(row => {
+    if (error) return;
+    const key = row.dataset.key;
+    const start = row.querySelector('[data-role="start"]').value;
+    const end = row.querySelector('[data-role="end"]').value;
+    if (!start || !end) { error = '모든 교시의 시작/종료 시간을 입력해주세요.'; return; }
+    if (start >= end) { error = '종료 시간은 시작 시간보다 늦어야 합니다.'; return; }
+    updates.push({ key, start, end });
+  });
+
+  if (error) {
+    showToast(error);
+    return;
   }
-})();
+
+  updates.forEach(u => {
+    const p = periods.find(p => p.key === u.key);
+    if (p) { p.start = u.start; p.end = u.end; }
+  });
+
+  renderTimetableBody();
+  closePeriodTimeEditor();
+  showToast('교시 시간이 변경되었습니다.');
+}
+
+/* ───────── 교시 알람 설정 (전체 공통) ───────── */
+
+function openAlarmSettingsPopup() {
+  document.getElementById('alarmSettingsPopup').classList.add('on');
+}
+
+function closeAlarmSettingsPopup() {
+  document.getElementById('alarmSettingsPopup').classList.remove('on');
+}
+
+function updateAlarmOnCountLabel() {
+  const kinds = [
+    { id: 'toggleAlarmBefore', short: '시작전' },
+    { id: 'toggleAlarmStart', short: '시작' },
+    { id: 'toggleAlarmEnd', short: '종료' },
+  ];
+  const onLabels = kinds
+    .filter(k => !document.getElementById(k.id).classList.contains('off'))
+    .map(k => k.short);
+
+  const label = document.getElementById('alarmOnCountLabel');
+  if (label) label.textContent = onLabels.length ? onLabels.join('·') : '꺼짐';
+}
+
+function toggleAlarmGroup(kind, btn) {
+  btn.classList.toggle('off');
+  const isOn = !btn.classList.contains('off');
+  const detail = document.getElementById(`alarmDetail-${kind}`);
+  detail.classList.toggle('disabled', !isOn);
+  detail.querySelectorAll('input, select, button').forEach(el => { el.disabled = !isOn; });
+  updateAlarmOnCountLabel();
+}
+
+function updateAlarmBeforeSummary() {
+  const mins = document.getElementById('alarmBeforeMinutes').value || 5;
+  const count = document.getElementById('alarmBeforeCount').value || 1;
+  document.getElementById('alarmBeforeSummary').textContent = `교시 시작 ${mins}분 전, ${count}회 울림`;
+}
+
+const SOUND_LABELS = { bell: '종소리', chime: '차임벨', ring: '알림종', xylophone: '실로폰' };
+
+function previewSound(kind) {
+  const select = document.getElementById(`soundSelect-${kind}`);
+  const label = SOUND_LABELS[select.value] || select.options[select.selectedIndex].textContent;
+  showToast(`'${label}' 알람음을 재생합니다.`);
+}
+
+function updateVolumeLabel(value) {
+  document.getElementById('volumeValueLabel').textContent = `${value}%`;
+}
+
+/* ───────── 한줄 안내 문구 설정 ───────── */
+
+const NOTICE_CATEGORIES = [
+  { key: 'commute', label: '등교 시간' },
+  { key: 'class', label: '수업 시간' },
+  { key: 'break', label: '쉬는 시간' },
+  { key: 'lunch', label: '점심 시간' },
+  { key: 'dismissal', label: '하교 시간' },
+];
+
+const DEFAULT_NOTICE_MESSAGES = {
+  commute: '좋은 아침입니다',
+  class: '집중해서 배워볼까요?',
+  break: '잠깐 쉬어가요',
+  lunch: '맛있게 먹어요!',
+  dismissal: '내일 또 만나요 :)',
+};
+
+let noticeMessages = { ...DEFAULT_NOTICE_MESSAGES };
+let noticeOverrideText = ''; // 직접 입력 모드에서 사용할 문구 (모드를 자동으로 바꿔도 값은 유지됨)
+let noticeMode = 'auto'; // 'auto' | 'manual' — 사용자가 명시적으로 선택한 현재 모드
+
+/* 시간표 탭의 교시 데이터를 기준으로 등교/수업/쉬는/점심/하교 시간대를 계산 */
+function computeNoticeTimeRanges() {
+  const periodItems = periods.filter(p => p.type === 'period');
+  const lunch = periods.find(p => p.type === 'lunch');
+  const first = periodItems[0];
+  const last = periodItems[periodItems.length - 1];
+  return {
+    commute: first ? `00:00~${first.start}` : '',
+    class: '교시 진행 중',
+    break: '교시 사이',
+    lunch: lunch ? `${lunch.start}~${lunch.end}` : '',
+    dismissal: last ? `${last.end}~24:00` : '',
+  };
+}
+
+function renderNoticeAutoPanel() {
+  const ranges = computeNoticeTimeRanges();
+  document.getElementById('noticeAutoPanel').innerHTML = NOTICE_CATEGORIES.map(cat => `
+    <div class="notice-field-row">
+      <div class="notice-field-label-wrap">
+        <span class="notice-field-label">${cat.label}</span>
+        <span class="notice-field-range">${ranges[cat.key]}</span>
+      </div>
+      <div class="notice-input-wrap">
+        <input type="text" class="notice-input" maxlength="30" id="noticeInput-${cat.key}" value="${noticeMessages[cat.key]}" oninput="onNoticeFieldInput('${cat.key}')" onclick="event.stopPropagation()">
+        <span class="notice-char-count" id="noticeCharCount-${cat.key}">${noticeMessages[cat.key].length}/30</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function onNoticeFieldInput(key) {
+  const input = document.getElementById(`noticeInput-${key}`);
+  noticeMessages[key] = input.value;
+  document.getElementById(`noticeCharCount-${key}`).textContent = `${input.value.length}/30`;
+}
+
+function onNoticeOverrideInput() {
+  const input = document.getElementById('noticeOverrideInput');
+  noticeOverrideText = input.value;
+  document.getElementById('noticeCharCount-override').textContent = `${input.value.length}/30`;
+}
+
+/* 자동/직접입력 둘 다 항상 보이되, 선택된 쪽만 강조하고 반대쪽은 흐리게 처리 */
+function setNoticeMode(mode) {
+  noticeMode = mode;
+  const autoBlock = document.getElementById('noticeModeCardAuto');
+  const manualBlock = document.getElementById('noticeModeCardManual');
+  autoBlock.classList.toggle('active', mode === 'auto');
+  autoBlock.classList.toggle('inactive', mode !== 'auto');
+  manualBlock.classList.toggle('active', mode === 'manual');
+  manualBlock.classList.toggle('inactive', mode !== 'manual');
+}
+
+function toggleNoticeDisplay(btn) {
+  btn.classList.toggle('off');
+  const isOn = !btn.classList.contains('off');
+  document.getElementById('noticeConfigArea').classList.toggle('disabled', !isOn);
+}
+
+function goToDisplayTab(e) {
+  e.stopPropagation();
+  switchTab('display', document.getElementById('tabBtn-display'));
+}
+
+renderTimetableBody();
+updateAlarmOnCountLabel();
+populateQuickLunchAfterOptions(6, true);
+document.getElementById('quickLunchAfter').value = '4';
+renderCalendarAndEvents();
+renderNoticeAutoPanel();
+setNoticeMode('auto');
+
+function closeAllPanels(keepSchool) {
+  document.querySelectorAll('.dropdown-panel').forEach(p => {
+    if (keepSchool && p.id === 'schoolPanel') return;
+    p.classList.remove('on');
+  });
+  document.querySelectorAll('.field-input').forEach(f => f.classList.remove('open'));
+}
+
+document.addEventListener('click', () => closeAllPanels());
+
+function groupToggle(btn) {
+  const group = btn.closest('.display-group');
+  const toggles = Array.from(group.querySelectorAll('button.toggle:not(#tog-meal)'));
+  const isOff = btn.classList.contains('off');
+
+  if (isOff) {
+    btn.classList.remove('off');
+  } else {
+    const onCount = toggles.filter(t => !t.classList.contains('off')).length;
+    if (onCount <= 1) {
+      showToast();
+      return;
+    }
+    btn.classList.add('off');
+  }
+}
 </script>
 </body>
 </html>
