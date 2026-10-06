@@ -192,6 +192,115 @@
   }
   .school-summary-btn.is-primary:hover { background: #ffe3d6; }
 
+  /* 회원 구분별 자동 연동 안내 (참고 02-1-1): 학교 정보 배너의 ? 칩 + 클릭 팝오버 */
+  .school-summary { position: relative; }
+  .sync-info-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 6px;
+    padding: 3px 10px 3px 4px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--font);
+    color: var(--text-tertiary);
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    cursor: pointer;
+    vertical-align: middle;
+  }
+  .sync-info-chip:hover,
+  .sync-info-chip.open { color: var(--text-secondary); border-color: var(--text-tertiary); }
+  .sync-info-chip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 17px; height: 17px;
+    border-radius: 50%;
+    background: #ff4600;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+  }
+  .sync-info-popover {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0; right: 0;
+    max-height: 560px;
+    overflow-y: auto;
+    padding: 22px 24px 24px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 10px 30px rgba(0,0,0,.18);
+    z-index: 40;
+    text-align: left;
+  }
+  .sync-info-popover.open { display: block; }
+  .sync-info-close {
+    position: absolute;
+    top: 12px; right: 12px;
+    width: 28px; height: 28px;
+    border: none; background: none;
+    font-size: 18px; line-height: 1;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+  .sync-info-close:hover { color: var(--text-primary); }
+  .sync-info-title {
+    padding-right: 28px;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--text-primary);
+  }
+  .sync-info-title em { font-style: normal; color: #ff4600; }
+  .sync-info-desc {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--text-primary);
+  }
+  .sync-info-table {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 6px 20px;
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: var(--bg-gray);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-primary);
+  }
+  .sync-info-table dt { font-weight: 800; }
+  .sync-info-table dd { margin: 0; font-weight: 400; }
+  .sync-info-ref {
+    margin-top: 14px;
+    border: 1px solid #ff4600;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .sync-info-ref img { display: block; width: 100%; }
+  .sync-info-ref-placeholder {
+    display: none;
+    min-height: 180px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-tertiary);
+    text-align: center;
+  }
+  .sync-info-ref.no-image img { display: none; }
+  .sync-info-ref.no-image .sync-info-ref-placeholder { display: flex; }
+
   .school-confirm-btn {
     font-size: 13.5px;
     font-weight: 800;
@@ -386,7 +495,24 @@
     white-space: nowrap;
   }
   .tt-cell.period:hover .period-time { color: var(--accent); }
-  .tt-cell.today-col { background: #fff5f0; }
+  /* 교시 시간 클릭 가능 안내: 교시 행에 hover 시에만 밑줄·아이콘 노출 (점심 행은 아이콘 없음) */
+  .period-time-row { display: inline-flex; align-items: center; }
+  .period-time {
+    border-bottom: 1px dashed transparent;
+    padding-bottom: 1px;
+  }
+  .period-edit-icon {
+    font-size: 10px;
+    margin-left: 3px;
+    transition: opacity .15s;
+  }
+  .tt-cell.period .period-edit-icon { opacity: 0; }
+  .tt-cell.period:hover .period-time {
+    border-bottom-color: var(--accent);
+  }
+  .tt-cell.period:hover .period-edit-icon {
+    opacity: 1;
+  }  .tt-cell.today-col { background: #fff5f0; }
   .tt-cell.today-col.now-cell { background: #ffe0d0; font-weight: 800; color: #cc3d00; }
   .tt-cell.now-row { position: relative; }
   .tt-cell.now-row.period::before {
@@ -1095,126 +1221,83 @@
   .popup-unit { font-size: 14px; color: var(--text-tertiary); }
   .popup-footer { display: flex; gap: 8px; margin-top: 18px; }
 
-  /* 한줄 안내 탭 */
+  /* 한 줄 안내 탭 (참고 02-7, 02-7-2) */
   .notice-config-area { transition: opacity .15s; }
   .notice-config-area.disabled { opacity: 0.5; pointer-events: none; }
 
-  .notice-onoff-note {
-    font-size: 13.5px;
-    color: var(--text-tertiary);
-    margin-bottom: 18px;
-  }
-  .notice-onoff-link {
-    border: none;
-    background: none;
-    padding: 0;
-    font-size: 13.5px;
-    font-weight: 800;
-    color: var(--accent);
-    text-decoration: underline;
-    cursor: pointer;
-    font-family: var(--font);
-  }
-
-  /* 자동/직접입력 — 명확하게 구분되는 카드형 라디오 선택 */
-  .notice-mode-select {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-  .notice-mode-card {
-    position: relative;
-    text-align: left;
-    border: 2px solid var(--line);
-    border-radius: var(--radius-md);
-    background: var(--white);
-    padding: 12px 14px 12px 34px;
-    cursor: pointer;
-    font-family: var(--font);
-  }
-  .notice-mode-card.active {
-    border-color: var(--accent);
-    background: var(--accent-light);
-  }
-  .notice-mode-check {
-    position: absolute;
-    left: 12px;
-    top: 14px;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    border: 2px solid var(--line);
-    background: var(--white);
+  .notice-head {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
   }
-  .notice-mode-check::after {
-    content: '';
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
-    opacity: 0;
-    transition: opacity .1s;
-  }
-  .notice-mode-card.active .notice-mode-check { border-color: var(--accent); }
-  .notice-mode-card.active .notice-mode-check::after { opacity: 1; }
-  .notice-mode-card-title {
-    display: block;
-    font-size: 15px;
-    font-weight: 800;
-    color: var(--text-primary);
-    margin-bottom: 2px;
-  }
-  .notice-mode-card.active .notice-mode-card-title { color: var(--accent); }
-  .notice-mode-card-sub {
-    display: block;
-    font-size: 12.5px;
-    color: var(--text-tertiary);
-    line-height: 1.35;
-  }
+  .notice-title { font-size: 19px; font-weight: 800; color: var(--text-primary); }
 
-  .notice-current-box {
+  /* 시간별 문구 / 고정 문구 전환 */
+  .notice-seg {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
     background: var(--bg-gray);
-    border-radius: var(--radius-md);
-    padding: 12px 14px;
-    margin-bottom: 18px;
+    overflow: hidden;
   }
-  .notice-current-label { font-size: 13px; font-weight: 800; color: var(--text-tertiary); display: block; margin-bottom: 6px; }
-  .notice-current-text { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+  .notice-seg-btn {
+    width: 134px;
+    height: 36px;
+    border: none;
+    background: none;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: var(--font);
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+  .notice-seg-btn + .notice-seg-btn { border-left: 1px solid var(--line); }
+  .notice-seg-btn.active { background: var(--white); color: var(--text-primary); }
 
-  .notice-field-row { margin-bottom: 14px; }
+  /* 두 패널을 같은 칸에 겹쳐 두어, 고정 문구로 바꿔도 박스 높이가 유지됨 */
+  .notice-panel {
+    display: grid;
+    background: var(--bg-gray);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 16px 20px 18px;
+  }
+  .notice-panel > div { grid-area: 1 / 1; }
+  .notice-panel > div.is-hidden { visibility: hidden; }
+
+  .notice-field-row { margin-bottom: 12px; }
   .notice-field-row:last-child { margin-bottom: 0; }
-  .notice-field-label-wrap {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
+  .notice-field-label {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
     margin-bottom: 6px;
   }
-  .notice-field-label { font-size: 14.5px; font-weight: 700; color: var(--text-secondary); }
-  .notice-field-range { font-size: 12.5px; color: var(--text-tertiary); }
   .notice-input-wrap { position: relative; }
   .notice-input {
     width: 100%;
-    height: 36px;
+    height: 46px;
     border: 1px solid var(--line);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
     background: var(--white);
-    font-size: 14.5px;
+    font-size: 16px;
+    font-weight: 700;
     font-family: var(--font);
     color: var(--text-primary);
-    padding: 0 48px 0 10px;
+    padding: 0 72px 0 14px;
     outline: none;
   }
+  .notice-input::placeholder { font-weight: 400; color: var(--text-tertiary); }
   .notice-input:focus { border-color: var(--accent); }
   .notice-char-count {
     position: absolute;
-    right: 10px;
+    right: 18px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 12.5px;
+    font-size: 13.5px;
     color: var(--text-tertiary);
   }
   .popup-btn {
@@ -1383,16 +1466,41 @@
           <span class="school-summary-icon">🏫</span>
           <span class="school-summary-text">
             <span id="schoolSummaryText">등록된 학교 정보가 없습니다</span>
-            <span class="school-summary-sub">(아이스크림에 등록된 정보로 자동 연동)</span>
+            <button type="button" class="sync-info-chip" id="syncInfoChip" onclick="toggleSyncInfoPopover(event)" aria-haspopup="dialog" aria-expanded="false">
+              <span class="sync-info-chip-icon">?</span>아이스크림 등록정보 자동 연동
+            </button>
           </span>
           <button class="school-summary-btn is-primary" id="schoolSummaryBtn" onclick="goToIcecreamProfile(event)">아이스크림에서 등록 ＞</button>
+
+          <!-- 회원 구분별 자동 연동 안내 팝오버 (칩 클릭 시 배너 바로 아래 노출) -->
+          <div class="sync-info-popover" id="syncInfoPopover" role="dialog" aria-label="아이스크림 등록정보 자동 연동 안내" onclick="event.stopPropagation()">
+            <button type="button" class="sync-info-close" onclick="closeSyncInfoPopover()" aria-label="닫기">✕</button>
+            <div class="sync-info-title"><em>아이스크림에 등록된 정보</em>에 따라 시간표·학사일정·급식을 자동으로 불러옵니다.</div>
+            <div class="sync-info-desc">
+              아이스크림에 등록된 학교·학년·반 정보로 NEIS와 매칭해 시간표, 학사일정, 급식 정보를 불러옵니다.<br>
+              학교 정보가 없거나 반 정보가 없는 경우(교과전담, 해당사항 없음)에는 직접 입력하여 사용가능합니다.
+            </div>
+            <dl class="sync-info-table">
+              <dt>담임</dt><dd>시간표·학사일정·급식 전체 자동 연동</dd>
+              <dt>교과전담</dt><dd>학사일정·급식만 자동 연동, 시간표는 직접 입력</dd>
+              <dt>학교 정보 없음</dt><dd>전체 직접 입력</dd>
+            </dl>
+            <!-- 참고 이미지: 아이스크림 등록 화면 캡처 (assets/sync-info-reference.png 전달 전까지는 placeholder 노출) -->
+            <div class="sync-info-ref" id="syncInfoRef">
+              <img src="assets/sync-info-reference.png" alt="아이스크림 개인정보 등록 화면 예시" onerror="this.parentElement.classList.add('no-image')">
+              <div class="sync-info-ref-placeholder">
+                <span>아이스크림 등록 화면 참고 이미지 영역</span>
+                <span>assets/sync-info-reference.png</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="tab-row">
         <button class="tab on" id="tabBtn-timetable" onclick="switchTab('timetable', this)">시간표</button>
         <button class="tab" id="tabBtn-schedule" onclick="switchTab('schedule', this)">학사일정</button>
-        <button class="tab" onclick="switchTab('notice', this)">한줄안내</button>
+        <button class="tab" onclick="switchTab('notice', this)">한 줄 안내</button>
         <button class="tab" id="tabBtn-display" onclick="switchTab('display', this)">설정</button>
       </div>
     </div>
@@ -1475,47 +1583,30 @@
 
       </div>
 
-      <!-- ── 한줄안내 탭 ── -->
+      <!-- ── 한 줄 안내 탭 ── -->
       <div class="tab-content" id="tab-notice">
-
-        <div class="section-row" style="margin-bottom:4px;">
-          <div class="section-label">한줄 안내</div>
-        </div>
-        <div class="display-sub" style="margin: 0 0 4px;">클래스보드 하단에 안내 문구를 표시합니다.</div>
-        <div class="notice-onoff-note">
-          표시 여부는 <button class="notice-onoff-link" onclick="goToDisplayTab(event)">설정 탭</button>에서 다른 화면 항목과 함께 켜고 끌 수 있어요.
-        </div>
 
         <div class="notice-config-area" id="noticeConfigArea">
 
-          <div class="notice-mode-select">
-            <button class="notice-mode-card" id="noticeModeCardAuto" onclick="setNoticeMode('auto')">
-              <span class="notice-mode-check" id="noticeModeCheckAuto"></span>
-              <span class="notice-mode-card-title">자동</span>
-              <span class="notice-mode-card-sub">시간표에 맞춰 문구가 자동으로 바뀌어요</span>
-            </button>
-            <button class="notice-mode-card" id="noticeModeCardManual" onclick="setNoticeMode('manual')">
-              <span class="notice-mode-check" id="noticeModeCheckManual"></span>
-              <span class="notice-mode-card-title">직접 입력</span>
-              <span class="notice-mode-card-sub">선생님이 적은 문구가 계속 표시돼요</span>
-            </button>
+          <!-- 좌측 제목 / 우측 시간별·고정 문구 전환 -->
+          <div class="notice-head">
+            <div class="notice-title">한 줄 안내 문구</div>
+            <div class="notice-seg">
+              <button class="notice-seg-btn" id="noticeSegAuto" onclick="setNoticeMode('auto')">시간별 문구</button>
+              <button class="notice-seg-btn" id="noticeSegManual" onclick="setNoticeMode('manual')">고정 문구</button>
+            </div>
           </div>
 
-          <div class="notice-current-box">
-            <span class="notice-current-label">지금 표시 중</span>
-            <div class="notice-current-text" id="noticeCurrentText">🔔</div>
-          </div>
+          <div class="notice-panel">
+            <div id="noticeAutoPanel"><!-- renderNoticeAutoPanel()로 렌더링 --></div>
 
-          <div id="noticeAutoPanel"><!-- renderNoticeAutoPanel()로 렌더링 --></div>
-
-          <div id="noticeManualPanel" style="display:none;">
-            <div class="notice-field-row">
-              <div class="notice-field-label-wrap">
-                <span class="notice-field-label">안내 문구</span>
-              </div>
-              <div class="notice-input-wrap">
-                <input type="text" class="notice-input" maxlength="30" id="noticeOverrideInput" placeholder="계속 표시할 문구를 입력하세요" oninput="onNoticeOverrideInput()">
-                <span class="notice-char-count" id="noticeCharCount-override">0/30</span>
+            <div id="noticeManualPanel" class="is-hidden">
+              <div class="notice-field-row">
+                <label class="notice-field-label" for="noticeOverrideInput">고정 문구</label>
+                <div class="notice-input-wrap">
+                  <input type="text" class="notice-input" maxlength="30" id="noticeOverrideInput" placeholder="항상 표시할 문구를 입력하세요" oninput="onNoticeOverrideInput()">
+                  <span class="notice-char-count" id="noticeCharCount-override">0/30</span>
+                </div>
               </div>
             </div>
           </div>
@@ -1786,10 +1877,7 @@
           <option value="PM">오후</option>
         </select>
         <select class="popup-select" id="quickStartHour"><option value="1">1시</option><option value="2">2시</option><option value="3">3시</option><option value="4">4시</option><option value="5">5시</option><option value="6">6시</option><option value="7">7시</option><option value="8">8시</option><option value="9">9시</option><option value="10">10시</option><option value="11">11시</option><option value="12">12시</option></select>
-        <select class="popup-select" id="quickStartMinute">
-          <option value="0">00분</option><option value="10">10분</option><option value="20">20분</option>
-          <option value="30">30분</option><option value="40">40분</option><option value="50">50분</option>
-        </select>
+        <select class="popup-select" id="quickStartMinute"><option value="0">00분</option><option value="5">05분</option><option value="10">10분</option><option value="15">15분</option><option value="20">20분</option><option value="25">25분</option><option value="30">30분</option><option value="35">35분</option><option value="40">40분</option><option value="45">45분</option><option value="50">50분</option><option value="55">55분</option></select>
       </div>
       <div class="qs-row">
         <span class="qs-label">교시 수</span>
@@ -1801,12 +1889,12 @@
       </div>
       <div class="qs-row">
         <span class="qs-label">쉬는 시간</span>
-        <select class="popup-select" id="quickBreakMinutes"><option value="0">0분</option><option value="5">5분</option><option value="10" selected>10분</option><option value="15">15분</option><option value="20">20분</option><option value="30">30분</option></select>
+        <select class="popup-select" id="quickBreakMinutes"><option value="0">0분</option><option value="5">5분</option><option value="10" selected>10분</option><option value="15">15분</option><option value="20">20분</option><option value="25">25분</option><option value="30">30분</option></select>
       </div>
       <div class="qs-row">
         <span class="qs-label">점심시간</span>
         <select class="popup-select" id="quickLunchAfter"></select>
-        <select class="popup-select" id="quickLunchMinutes"><option value="30">30분</option><option value="40">40분</option><option value="50" selected>50분</option><option value="60">60분</option><option value="70">70분</option><option value="80">80분</option><option value="90">90분</option></select>
+        <select class="popup-select" id="quickLunchMinutes"><option value="30">30분</option><option value="35">35분</option><option value="40">40분</option><option value="45">45분</option><option value="50" selected>50분</option><option value="55">55분</option><option value="60">60분</option></select>
       </div>
       <div class="qs-apply-row">
         <button class="qs-apply-btn" onclick="applyQuickSettings()">적용</button>
@@ -1828,7 +1916,6 @@ function switchTab(id, el) {
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('on'));
   el.classList.add('on');
   document.getElementById('tab-' + id).classList.add('on');
-  if (id === 'notice') renderNoticeCurrentStatus();
   if (id === 'timetable') {
     // 시간표 탭에 들어올 때마다 불러오기 프롬프트 노출 조건을 다시 체크
     ttLoadPromptDismissed = false;
@@ -1910,6 +1997,33 @@ function updateNeisLoadButtonState() {
   document.getElementById('btnNeisScheduleLoad').classList.toggle('is-disabled', !hasSchoolInfo());
   updateSchoolSummary();
 }
+
+/* 회원 구분별 자동 연동 안내 팝오버: 칩 클릭으로 열고, 바깥 클릭/X로 닫음 */
+function toggleSyncInfoPopover(e) {
+  e.stopPropagation();
+  const popover = document.getElementById('syncInfoPopover');
+  if (popover.classList.contains('open')) {
+    closeSyncInfoPopover();
+    return;
+  }
+  // 칩 바로 아래에서 시작해 배너 오른쪽 끝까지 펼침 (공간이 좁으면 배너 전체 너비 사용)
+  const chip = document.getElementById('syncInfoChip');
+  const banner = document.getElementById('schoolSummaryView');
+  const left = chip.getBoundingClientRect().left - banner.getBoundingClientRect().left;
+  popover.style.left = banner.clientWidth - left >= 560 ? `${left}px` : '0';
+  popover.classList.add('open');
+  chip.classList.add('open');
+  chip.setAttribute('aria-expanded', 'true');
+}
+
+function closeSyncInfoPopover() {
+  const chip = document.getElementById('syncInfoChip');
+  document.getElementById('syncInfoPopover').classList.remove('open');
+  chip.classList.remove('open');
+  chip.setAttribute('aria-expanded', 'false');
+}
+
+document.addEventListener('click', closeSyncInfoPopover);
 
 /* 읽기 전용 학교 정보 배너 */
 function updateSchoolSummary() {
@@ -2001,7 +2115,7 @@ function applyTestState(mode, silent) {
 
 /* ───────── NEIS 시간표 불러오기 ───────── */
 
-const NEIS_TIMETABLE_LOADED_MSG = '시간표를 불러왔습니다. 교시별 시간은 직접 수정해주세요.';
+const NEIS_TIMETABLE_LOADED_MSG = '시간표를 불러왔습니다. 교시별 시간은 교시를 클릭하여 직접 수정해주세요.';
 
 // [직접 입력하기]로 프롬프트를 닫은 상태. 시간표 탭에 다시 들어오면 초기화되어 조건을 매번 다시 체크함
 let ttLoadPromptDismissed = false;
@@ -2356,7 +2470,7 @@ function renderPeriodRow(p) {
     <div class="tt-grid">
       <div class="${periodCellClass}" onclick="openPeriodTimeEditor('${p.key}', event)">
         <span class="period-num"${periodNumStyle}>${label}</span>
-        <span class="period-time" id="periodTimeLabel-${p.key}">${p.start}~${p.end}</span>
+        <span class="period-time-row"><span class="period-time" id="periodTimeLabel-${p.key}">${p.start}~${p.end}</span>${isLunch ? '' : '<span class="period-edit-icon">✏️</span>'}</span>
       </div>
       ${dayCells}
     </div>`;
@@ -2493,7 +2607,7 @@ function setQuickMinutesValue(id, minutes) {
   select.value = value;
 }
 
-/* 레이어를 열 때, 현재 시간표 상태를 간편 설정 값으로 역산해서 채워둠 (10분 단위로 근사) */
+/* 레이어를 열 때, 현재 시간표 상태를 간편 설정 값으로 역산해서 채워둠 (5분 단위로 근사) */
 function initQuickSettingsFromPeriods() {
   const periodItems = periods.filter(p => p.type === 'period');
   const first = periodItems[0];
@@ -2508,7 +2622,7 @@ function initQuickSettingsFromPeriods() {
 
   document.getElementById('quickStartAmPm').value = ampm;
   document.getElementById('quickStartHour').value = String(hour12);
-  document.getElementById('quickStartMinute').value = String(minute - (minute % 10));
+  document.getElementById('quickStartMinute').value = String(minute - (minute % 5));
 
   setQuickMinutesValue('quickClassMinutes', timeToMinutes(first.end) - timeToMinutes(first.start));
 
@@ -2539,7 +2653,8 @@ function recalcPeriodsFromQuickSettings() {
   const classMin = parseInt(document.getElementById('quickClassMinutes').value, 10) || 40;
   const breakMin = parseInt(document.getElementById('quickBreakMinutes').value, 10) || 0;
   const lunchAfter = parseInt(document.getElementById('quickLunchAfter').value, 10);
-  const lunchMin = parseInt(document.getElementById('quickLunchMinutes').value, 10) || 50;
+  const lunchMinRaw = parseInt(document.getElementById('quickLunchMinutes').value, 10);
+  const lunchMin = Number.isNaN(lunchMinRaw) ? 50 : lunchMinRaw; // 00분도 선택 가능
 
   let hour24 = hour12 % 12;
   if (ampm === 'PM') hour24 += 12;
@@ -2834,7 +2949,7 @@ function updateVolumeLabel(value) {
   document.getElementById('volumeValueLabel').textContent = value;
 }
 
-/* ───────── 한줄 안내 문구 설정 ───────── */
+/* ───────── 한 줄 안내 문구 설정 ───────── */
 
 const NOTICE_CATEGORIES = [
   { key: 'commute', label: '등교 시간' },
@@ -2846,77 +2961,20 @@ const NOTICE_CATEGORIES = [
 
 const DEFAULT_NOTICE_MESSAGES = {
   commute: '좋은 아침입니다',
-  class: '집중해서 배워볼까요?',
-  break: '잠깐 쉬어가요',
-  lunch: '맛있게 먹어요!',
-  dismissal: '내일 또 만나요 :)',
+  class: '바른 자세로 수업에 참여해요',
+  break: '지금은 쉬는 시간 입니다.',
+  lunch: '편식하지 않고 골고루 먹어요',
+  dismissal: '집에 갈 때도 안전 제일!',
 };
 
 let noticeMessages = { ...DEFAULT_NOTICE_MESSAGES };
-let noticeOverrideText = ''; // 직접 입력 모드에서 사용할 문구 (모드를 자동으로 바꿔도 값은 유지됨)
-let noticeMode = 'auto'; // 'auto' | 'manual' — 사용자가 명시적으로 선택한 현재 모드
-
-/* 시간표 탭의 교시 데이터를 기준으로 등교/수업/쉬는/점심/하교 시간대를 계산 */
-function computeNoticeTimeRanges() {
-  const periodItems = periods.filter(p => p.type === 'period');
-  const lunch = periods.find(p => p.type === 'lunch');
-  const first = periodItems[0];
-  const last = periodItems[periodItems.length - 1];
-  return {
-    commute: first ? `00:00~${first.start}` : '',
-    class: '교시 진행 중',
-    break: '교시 사이',
-    lunch: lunch ? `${lunch.start}~${lunch.end}` : '',
-    dismissal: last ? `${last.end}~24:00` : '',
-  };
-}
-
-function timeStrToMinutes(t) {
-  const [h, m] = t.split(':').map(Number);
-  return h * 60 + m;
-}
-
-/* 지금 시각을 기준으로 자동 문구 카테고리 판별 (등교/수업/쉬는/점심/하교) */
-function getCurrentAutoCategory() {
-  const periodItems = periods.filter(p => p.type === 'period');
-  if (!periodItems.length) return 'class';
-  const first = periodItems[0];
-  const last = periodItems[periodItems.length - 1];
-  const lunch = periods.find(p => p.type === 'lunch');
-  const now = new Date();
-  const nowMin = now.getHours() * 60 + now.getMinutes();
-
-  if (nowMin < timeStrToMinutes(first.start)) return 'commute';
-  if (nowMin >= timeStrToMinutes(last.end)) return 'dismissal';
-  if (lunch && nowMin >= timeStrToMinutes(lunch.start) && nowMin < timeStrToMinutes(lunch.end)) return 'lunch';
-  for (const p of periodItems) {
-    if (nowMin >= timeStrToMinutes(p.start) && nowMin < timeStrToMinutes(p.end)) return 'class';
-  }
-  return 'break';
-}
-
-/* 지금 표시 중인 문구: 선택된 모드(자동/직접입력)를 그대로 따름 */
-function getCurrentDisplayMessage() {
-  if (noticeMode === 'manual') {
-    return noticeOverrideText;
-  }
-  const category = getCurrentAutoCategory();
-  return noticeMessages[category] || '';
-}
-
-function renderNoticeCurrentStatus() {
-  const text = getCurrentDisplayMessage();
-  document.getElementById('noticeCurrentText').textContent = text ? `🔔 ${text}` : '🔔 (문구를 입력해주세요)';
-}
+let noticeOverrideText = ''; // 고정 문구 모드에서 사용할 문구 (모드를 시간별로 바꿔도 값은 유지됨)
+let noticeMode = 'auto'; // 'auto'(시간별 문구) | 'manual'(고정 문구) — 사용자가 명시적으로 선택한 현재 모드
 
 function renderNoticeAutoPanel() {
-  const ranges = computeNoticeTimeRanges();
   document.getElementById('noticeAutoPanel').innerHTML = NOTICE_CATEGORIES.map(cat => `
     <div class="notice-field-row">
-      <div class="notice-field-label-wrap">
-        <span class="notice-field-label">${cat.label}</span>
-        <span class="notice-field-range">${ranges[cat.key]}</span>
-      </div>
+      <label class="notice-field-label" for="noticeInput-${cat.key}">${cat.label}</label>
       <div class="notice-input-wrap">
         <input type="text" class="notice-input" maxlength="30" id="noticeInput-${cat.key}" value="${noticeMessages[cat.key]}" oninput="onNoticeFieldInput('${cat.key}')">
         <span class="notice-char-count" id="noticeCharCount-${cat.key}">${noticeMessages[cat.key].length}/30</span>
@@ -2929,35 +2987,27 @@ function onNoticeFieldInput(key) {
   const input = document.getElementById(`noticeInput-${key}`);
   noticeMessages[key] = input.value;
   document.getElementById(`noticeCharCount-${key}`).textContent = `${input.value.length}/30`;
-  renderNoticeCurrentStatus();
 }
 
 function onNoticeOverrideInput() {
   const input = document.getElementById('noticeOverrideInput');
   noticeOverrideText = input.value;
   document.getElementById('noticeCharCount-override').textContent = `${input.value.length}/30`;
-  renderNoticeCurrentStatus();
 }
 
-/* 자동/직접입력 중 어떤 모드가 선택됐는지 카드 UI로 명확하게 표시 */
+/* 시간별 문구 / 고정 문구 전환 */
 function setNoticeMode(mode) {
   noticeMode = mode;
-  document.getElementById('noticeModeCardAuto').classList.toggle('active', mode === 'auto');
-  document.getElementById('noticeModeCardManual').classList.toggle('active', mode === 'manual');
-  document.getElementById('noticeAutoPanel').style.display = mode === 'auto' ? 'block' : 'none';
-  document.getElementById('noticeManualPanel').style.display = mode === 'manual' ? 'block' : 'none';
-  renderNoticeCurrentStatus();
+  document.getElementById('noticeSegAuto').classList.toggle('active', mode === 'auto');
+  document.getElementById('noticeSegManual').classList.toggle('active', mode === 'manual');
+  document.getElementById('noticeAutoPanel').classList.toggle('is-hidden', mode !== 'auto');
+  document.getElementById('noticeManualPanel').classList.toggle('is-hidden', mode !== 'manual');
 }
 
 function toggleNoticeDisplay(btn) {
   btn.classList.toggle('off');
   const isOn = !btn.classList.contains('off');
   document.getElementById('noticeConfigArea').classList.toggle('disabled', !isOn);
-}
-
-function goToDisplayTab(e) {
-  e.stopPropagation();
-  switchTab('display', document.getElementById('tabBtn-display'));
 }
 
 // 디폴트 상태: 학교·학년·반 모두 유효
